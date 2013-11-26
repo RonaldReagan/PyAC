@@ -13,3 +13,29 @@ guaranteed to compile on anything but OSX as I do not test regularly enough on o
 
   This follows all the same licenses as AC does. My code isn't anything
 special, so feel free to use what I added in anyway you want.
+
+
+Building
+--------
+
+The current build system is scons which can be found here: http://www.scons.org/
+
+cd into ./source/src
+To build (on *nix):
+
+	$ scons
+
+To clean (on *nix):
+
+	$ scons -c
+
+To make install (on *nix):
+
+	$ scons install
+
+To build, and then run the server (on *nix):
+
+	$ scons install
+	$ cd ../../
+	$ ./bin/native_server
+	
