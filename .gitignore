@@ -75,6 +75,9 @@ docs/_build/
 *.out
 *.app
 
+###SCONS###
+.sconsign.dblite
+
 ###OSX###
 .DS_Store
 .AppleDouble
