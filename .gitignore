@@ -1,5 +1,5 @@
 ###AssaultCube###
-trunk/packages
+packages
 bin/native_server
 
 ###Python###
