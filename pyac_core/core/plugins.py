@@ -1,9 +1,9 @@
-import os,sys
+import os
+
+import acserver
 
 plugins = {}
-paths = ['./plugins/']
-
-# sys.path.append('./plugins/')
+paths = ['./plugins']
 
 class Plugin:
     def __init__(self, path):
@@ -24,6 +24,7 @@ def loadPlugins():
             if os.path.isdir(dirpath):
                 p = Plugin(dirpath)
                 plugins[p.name] = p
+                acserver.log(":   - Loaded plugin %s"%p.name)
                 
     for plugin in plugins.values():
         plugin.loadModule()

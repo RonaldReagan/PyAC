@@ -7,6 +7,7 @@ files = [
 'stream.cpp',
 'tools.cpp',
 'wizard.cpp',
+'pyac_servermodule.cpp',
 'pyac.cpp',
 ]
 lpath = ['../enet/.libs','/usr/local/lib/python2.7/config']

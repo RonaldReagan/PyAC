@@ -8,8 +8,11 @@
 			return false; \
 	}
 
+PyMODINIT_FUNC initModule();
+
 bool initCore() {
     PyObject *pFunc = 0, *pArgs = 0, *pValue = 0, *pluginsModule = 0;
+    logline(ACLOG_INFO,":  Loading plugins");
     pluginsModule = PyImport_ImportModule("core.plugins");
 	PY_ERR(pluginsModule)
 	pFunc = PyObject_GetAttrString(pluginsModule, "loadPlugins");
@@ -35,11 +38,14 @@ bool initCore() {
 }
 	
 void initPython(char *name) {
+    logline(ACLOG_INFO,"Initalizing Python:");
     Py_SetProgramName(name);
     Py_Initialize();
     
     PyRun_SimpleString("import sys\nsys.path.append('./plugins');sys.path.append('./pyac_core')");
     
+    logline(ACLOG_INFO,":  Loading acserver module");
+    initModule();
     initCore();
 }
 
