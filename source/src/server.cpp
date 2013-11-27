@@ -3967,8 +3967,6 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
 
 void cleanupserver()
 {
-    extern void finalizePython();
-    
     if(serverhost) { enet_host_destroy(serverhost); serverhost = NULL; }
     if(svcctrl)
     {
@@ -4150,7 +4148,6 @@ void quitproc(int param)
 void initserver(bool dedicated, int argc, char **argv)
 {
     const char *service = NULL;
-    extern void initPython(char *name);
 
     for(int i = 1; i<argc; i++)
     {
