@@ -9,7 +9,7 @@ anything. However if any interest is sparked or anyone else wants to
 contribute, I may get more serious about this project. This is not
 guaranteed to compile on anything but OSX as I do not test regularly enough on other systems. Hopefully it will be stable on other operating systems, I'd like to think my programming isn't that bad.
 
-  This repository is based off of 1.2 until I get a stable version, and then I will update and continue updating with the main AC repository.
+  This repository is based off of 1.2 until I get a stable version, and then I will update and continue updating with the main AC repository. Some of the code base is based off of a similar project, xsbs, which can be found here: https://github.com/greghaynes/xsbs
 
   This follows all the same licenses as AC does. My code isn't anything
 special, so feel free to use what I added in anyway you want.
