@@ -1,6 +1,8 @@
 ###AssaultCube###
 packages
 bin/native_server
+ac_server
+serverlog_*
 
 ###Python###
 # Byte-compiled / optimized / DLL files
