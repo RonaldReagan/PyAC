@@ -4151,8 +4151,6 @@ void initserver(bool dedicated, int argc, char **argv)
 {
     const char *service = NULL;
     extern void initPython(char *name);
-    
-    initPython(argv[0]);
 
     for(int i = 1; i<argc; i++)
     {
