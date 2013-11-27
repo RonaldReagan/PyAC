@@ -7,11 +7,12 @@ files = [
 'stream.cpp',
 'tools.cpp',
 'wizard.cpp',
+'pyac.cpp',
 ]
-lpath = ['../enet/.libs']
-libs = ['enet','z','pthread','util','dl','m']
+lpath = ['../enet/.libs','/usr/local/lib/python2.7/config']
+libs = ['enet','z','python2.7','pthread','util','dl','m']
 lflags = '-Xlinker'
-flags = '-DSTANDALONE -I. -Ibot -I../enet/include -fno-strict-aliasing -g -O2 -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes'
+flags = '-DSTANDALONE -I. -I../enet/include -I/usr/local/include/python2.7 -fno-strict-aliasing -g -O2 -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes'
 
 acserver = Program('ac_server',files, CCFLAGS=flags,LIBS=libs,LIBPATH=lpath,LINKFLAGS=lflags)
 Alias('install',InstallAs('../../bin/native_server', acserver))

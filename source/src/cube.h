@@ -13,6 +13,7 @@
 #include "weapon.h"
 #include "entity.h"
 #include "world.h"
+#include "pyac.h"
 
 #ifndef STANDALONE
  #include "varray.h"

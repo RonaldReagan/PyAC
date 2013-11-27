@@ -1,3 +1,9 @@
+#ifdef __APPLE__
+    #include <Python/Python.h>
+#else
+    #include <Python.h>
+#endif
+
 #ifdef __GNUC__
     #ifdef _FORTIFY_SOURCE
         #undef _FORTIFY_SOURCE

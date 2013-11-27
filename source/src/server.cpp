@@ -3967,12 +3967,15 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
 
 void cleanupserver()
 {
+    extern void finalizePython();
+    
     if(serverhost) { enet_host_destroy(serverhost); serverhost = NULL; }
     if(svcctrl)
     {
         svcctrl->stop();
         DELETEP(svcctrl);
     }
+    finalizePython();
     exitlogging();
 }
 
@@ -4147,6 +4150,9 @@ void quitproc(int param)
 void initserver(bool dedicated, int argc, char **argv)
 {
     const char *service = NULL;
+    extern void initPython(char *name);
+    
+    initPython(argv[0]);
 
     for(int i = 1; i<argc; i++)
     {
@@ -4198,7 +4204,9 @@ void initserver(bool dedicated, int argc, char **argv)
         serverhost = enet_host_create(&address, scl.maxclients+1, 3, 0, scl.uprate);
         if(!serverhost) fatal("could not create server host");
         loopi(scl.maxclients) serverhost->peers[i].data = (void *)-1;
-
+        
+        initPython(argv[0]);
+        
         maprot.init(scl.maprot);
         maprot.next(false, true); // ensure minimum maprot length of '1'
         passwords.init(scl.pwdfile, scl.adminpasswd);
