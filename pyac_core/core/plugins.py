@@ -58,6 +58,7 @@ def loadPlugins():
         plugin.loadModule()
 
 def reloadPlugins():
+    acserver.log("Reloading Plugins:")
     for p in plugins.values():
         p.unloadModule()
     for p in plugins.values():

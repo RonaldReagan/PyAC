@@ -14,6 +14,7 @@
 #include "entity.h"
 #include "world.h"
 #include "pyac.h"
+#include "server-structs.h"
 
 #ifndef STANDALONE
  #include "varray.h"

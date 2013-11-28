@@ -1,11 +1,19 @@
 import acserver
 from core.logging import *
 from core.events import eventHandler, policyHandler
-acserver.log("Wee! Development!",ACLOG_INFO)
+from core.plugins import reloadPlugins
+acserver.log("Wee! Development! Module is initalized!",ACLOG_INFO)
 
 @eventHandler('serverExtension')
 def serverext(cn,ext,ext_text):
     acserver.log('SRVEXT from(%d): /%s "%s"'%(cn,ext,ext_text))
+    if ext == "kill":
+        acserver.killClient(cn,cn)
+    if ext == "ip":
+        tcn = int(ext_text)
+        acserver.msg("IP: \f1%s"%acserver.getClient(tcn)['hostname'],cn)
+    if ext == "reload":
+        reloadPlugins()
 
 @eventHandler('clientDisconnect')
 def serverext(cn,reason):
