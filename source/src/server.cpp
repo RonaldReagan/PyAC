@@ -2358,6 +2358,7 @@ void disconnect_client(int n, int reason)
     int sp = (servmillis - c.connectmillis) / 1000;
     if(reason>=0) logline(ACLOG_INFO, "[%s] disconnecting client %s (%s) cn %d, %d seconds played%s", c.hostname, c.name, disc_reason(reason), n, sp, scoresaved);
     else logline(ACLOG_INFO, "[%s] disconnected client %s cn %d, %d seconds played%s", c.hostname, c.name, n, sp, scoresaved);
+    triggerFunc("clientDisconnect", false, "ii", n, reason );
     totalclients--;
     c.peer->data = (void *)-1;
     if(reason>=0) enet_peer_disconnect(c.peer, reason);
@@ -2651,6 +2652,7 @@ void process(ENetPacket *packet, int sender, int chan)
         else if(chan!=1 || getint(p)!=SV_CONNECT) disconnect_client(sender, DISC_TAGT);
         else
         {
+            int discreason = -1;
             cl->acversion = getint(p);
             cl->acbuildtype = getint(p);
             defformatstring(tags)(", AC: %d|%x", cl->acversion, cl->acbuildtype);
@@ -2682,11 +2684,13 @@ void process(ENetPacket *packet, int sender, int chan)
             { // nickname matches whitelist, but IP is not in the required range or PWD doesn't match
                 logline(ACLOG_INFO, "[%s] '%s' matches nickname whitelist: wrong %s%s", cl->hostname, cl->name, wl == NWL_IPFAIL ? "IP" : "PWD", tags);
                 disconnect_client(sender, DISC_BADNICK);
+                discreason = DISC_BADNICK;
             }
             else if(bl > 0)
             { // nickname matches blacklist
                 logline(ACLOG_INFO, "[%s] '%s' matches nickname blacklist line %d%s", cl->hostname, cl->name, bl, tags);
                 disconnect_client(sender, DISC_BADNICK);
+                discreason = DISC_BADNICK;
             }
             else if(passwords.check(cl->name, cl->pwd, cl->salt, &pd, (cl->type==ST_TCPIP ? cl->peer->address.host : 0)) && (!pd.denyadmin || (banned && !srvfull && !srvprivate)) && bantype != BAN_MASTER) // pass admins always through
             { // admin (or deban) password match
@@ -2713,16 +2717,30 @@ void process(ENetPacket *packet, int sender, int chan)
                     cl->isauthed = true;
                     logline(ACLOG_INFO, "[%s] %s client logged in (using serverpassword)%s", cl->hostname, cl->name, tags);
                 }
-                else disconnect_client(sender, DISC_WRONGPW);
+                else
+                {
+                        disconnect_client(sender, DISC_WRONGPW);
+                        discreason = DISC_WRONGPW;
+                }
             }
-            else if(srvprivate) disconnect_client(sender, DISC_MASTERMODE);
-            else if(srvfull) disconnect_client(sender, DISC_MAXCLIENTS);
-            else if(banned) disconnect_client(sender, DISC_BANREFUSE);
-            else
-            {
+            else if(srvprivate) {
+                disconnect_client(sender, DISC_MASTERMODE);
+                discreason = DISC_MASTERMODE;
+            }
+            else if(srvfull) {
+                disconnect_client(sender, DISC_MAXCLIENTS);
+                discreason = DISC_MAXCLIENTS;
+            }
+            else if(banned) {
+                disconnect_client(sender, DISC_BANREFUSE);
+                discreason = DISC_BANREFUSE;
+            }
+            else {
                 cl->isauthed = true;
                 logline(ACLOG_INFO, "[%s] %s logged in (default)%s", cl->hostname, cl->name, tags);
             }
+            
+            triggerFunc("clientConnect", false, "ii", cl->clientnum, discreason );
         }
         if(!cl->isauthed) return;
 
@@ -3560,6 +3578,7 @@ void process(ENetPacket *packet, int sender, int chan)
 
                 getstring(text, p, 64);
                 char *ext = text;   // extension specifier in the form of OWNER::EXTENSION, see sample below
+                char ext_text[MAXTRANS];
                 int n = getint(p);  // length of data after the specifier
                 if(n < 0 || n > 50) return;
 
@@ -3592,12 +3611,11 @@ void process(ENetPacket *packet, int sender, int chan)
                         sendservmsg(msg, -1);
                     }
                 }
-                // else if()
-
-                // add other extensions here
-
-                else for(; n > 0; n--) getint(p); // ignore unknown extensions
-
+                else
+                {
+                    getstring(ext_text, p, n);
+                    triggerFunc("serverExtension", false, "iss", cl->clientnum,ext,ext_text);
+                }
                 break;
             }
 
@@ -4225,6 +4243,7 @@ void initserver(bool dedicated, int argc, char **argv)
 #else
         logline(ACLOG_INFO, "anticheat: disabled");
 #endif
+        triggerFunc("initEnd", false, "");
     }
 
     resetserverifempty();

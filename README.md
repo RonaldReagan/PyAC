@@ -38,4 +38,37 @@ To build, and then run the server (on *nix):
 	$ scons install
 	$ cd ../../
 	$ ./bin/native_server
-	
+
+
+---
+API
+---
+
+This will server as the API documentation, until a better solution is had.
+
+###Hooks
+
+* **initEnd**() - *Called when the init phase of server startup has finished (all config files loaded). Remember that the plugin gets loaded before any other initialization occurs.*
+* **serverExtension**(int cn, str ext, str ext_text) - *Called when a user uses a /serverextension, and no matching server extensions have been found.*
+* **clientDisconnect**(int cn, int reason) - *Called when a client disconnects for any reason. The specific reason is given by the argument 'reason'*
+* **clientConnect**(int cn, int discreason) - *Called when a client connects. If the client fails to connect (matches blacklist, offends a whitelist entry), then the client will be immediately disconnected and the reason for disconnection will be given in discreason.*
+
+###Modules
+
+####acserver
+Main module for server interaction.
+
+Methods defined here:
+
+* **acserver.log**(str msg, [int level])
+
+####core
+Core functionality. These are modules that are required for server functionality.
+
+####core.events
+
+####core.plugins
+This plugin should not be used manually.
+
+####core.logging
+This module defines constants used with *acserver.log*
