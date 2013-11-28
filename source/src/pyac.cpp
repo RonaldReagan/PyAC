@@ -112,7 +112,6 @@ bool triggerFuncEvent(const char *name, vector<PyObject*> args, PyObject *func)
 	else
 		pArgsArgs = PyTuple_New(0);
 	
-	PyObject* objectsRepresentation = PyObject_Repr(pArgsArgs);
 	PyTuple_SetItem(pArgs, 1, pArgsArgs);
 	pValue = callPyFunc(func, pArgs);
 	if(!pValue)
