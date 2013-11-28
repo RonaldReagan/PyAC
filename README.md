@@ -60,7 +60,8 @@ Main module for server interaction.
 
 Methods defined here:
 
-* **acserver.log**(str msg, [int level])
+* **acserver.log**(str msg, [int level]) - *Logs a message, level defaults to info.*
+* **acserver.msg**(str msg, [int cn]) - *Sends a message to a client, if cn is -1 (default) then it sends the message to all clients.*
 
 ####core
 Core functionality. These are modules that are required for server functionality.

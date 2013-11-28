@@ -14,3 +14,5 @@ def serverext(cn,reason):
 @eventHandler('clientConnect')
 def serverext(cn,discreason):
     acserver.log('Connect (%d), DiscReason: %d'%(cn,discreason))
+    if discreason == -1:
+        acserver.msg("Welcome to our server!", cn)

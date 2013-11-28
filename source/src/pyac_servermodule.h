@@ -1,0 +1,1 @@
+extern void sendservmsg(const char *msg, int cn);
