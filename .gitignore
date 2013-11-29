@@ -3,6 +3,7 @@ packages
 bin/native_server
 ac_server
 serverlog_*
+pyserver.conf
 
 ###Python###
 # Byte-compiled / optimized / DLL files

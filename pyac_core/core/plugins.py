@@ -12,12 +12,13 @@ import os
 from ConfigParser import ConfigParser, NoOptionError
 
 import acserver
+from core.config import Config
 
 plugins = {}
 paths = ['./plugins']
 
 class Plugin:
-    def __init__(self, path, config_path):
+    def __init__(self, path, config_path, forcedisabled):
         self.path = path
         conf = ConfigParser()
         conf.read(config_path)
@@ -30,6 +31,10 @@ class Plugin:
         except NoOptionError:
             self.isenabled = False
         del conf
+        
+        if forcedisabled:
+            self.isenabled = False
+            
     def loadModule(self):
         if self.isenabled:
             self.module = __import__(os.path.basename(self.path))
@@ -41,13 +46,21 @@ class Plugin:
 
 def loadPlugins():
     plugins.clear()
+    
+    ignoredplugins = Config['ignoredplugins'].split()
     for path in paths:
         files = os.listdir(path)
         for file in files:
             dirpath = os.path.join(path,file)
             config_path = os.path.join(dirpath,"plugin.conf")
             if os.path.isdir(dirpath) and os.path.exists(config_path):
-                p = Plugin(dirpath, config_path)
+                if os.path.basename(dirpath) in ignoredplugins:
+                    forcedisabled = True
+                else:
+                    forcedisabled = False
+                    
+                p = Plugin(dirpath, config_path, forcedisabled)
+                
                 if p.isenabled:
                     plugins[p.name] = p
                     acserver.log(":   + Loaded plugin %s"%p.name)

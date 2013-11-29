@@ -13,7 +13,12 @@ PyMODINIT_FUNC initModule();
 static PyObject *eventsModule, *triggerEventFunc, *triggerPolicyEventFunc, *updateFunc;
 
 bool initCore() {
-    PyObject *pFunc = 0, *pArgs = 0, *pValue = 0, *pluginsModule = 0;
+    PyObject *pFunc = 0, *pArgs = 0, *pValue = 0, *pluginsModule = 0, *configModule;
+    
+    logline(ACLOG_INFO,":  Loading global config");
+	configModule = PyImport_ImportModule("core.config");
+	PY_ERR(configModule)
+	
     eventsModule = PyImport_ImportModule("core.events");
 	PY_ERR(eventsModule)
 	triggerEventFunc = PyObject_GetAttrString(eventsModule, "triggerServerEvent");
@@ -37,6 +42,7 @@ bool initCore() {
 		fprintf(stderr, "Error: update function could not be loaded.\n");
 		return false;
 	}
+	
     logline(ACLOG_INFO,":  Loading plugins");
     pluginsModule = PyImport_ImportModule("core.plugins");
 	PY_ERR(pluginsModule)
@@ -58,6 +64,7 @@ bool initCore() {
 	}
 	Py_DECREF(pValue);
 	Py_DECREF(pluginsModule);
+	Py_DECREF(configModule);
 	
 	return true;
 }
