@@ -402,6 +402,7 @@ void sendservmsg(const char *msg, int cn = -1)
 void sendspawn(client *c)
 {
     if(team_isspect(c->team)) return;
+    if (triggerFunc("clientSpawn", true, "i", c->clientnum)) return;
     clientstate &gs = c->state;
     gs.respawn();
     gs.spawnstate(smode);
@@ -1481,6 +1482,7 @@ void serverdamage(client *target, client *actor, int damage, int gun, bool gib, 
     }
     if(ts.health<=0)
     {
+        if (triggerFunc("clientDeath", true, "iiii",actor->clientnum,target->clientnum, gun, damage)) return;
         int targethasflag = clienthasflag(target->clientnum);
         bool tk = false, suic = false;
         target->state.deaths++;
