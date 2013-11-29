@@ -12,6 +12,9 @@ def serverext(cn,ext,ext_text):
     if ext == "ip":
         tcn = int(ext_text)
         acserver.msg("IP: \f1%s"%acserver.getClient(tcn)['hostname'],cn)
+    if ext == "spawn":
+        tcn,health,armour,ammo,mag,weapon,primaryweapon = map(int,ext_text.split()) #/serverextension spawn "0 55 5555 12 12 2 1"
+        acserver.log(repr(acserver.spawnClient(tcn,health,armour,ammo,mag,weapon,primaryweapon)))
     if ext == "reload":
         reloadPlugins()
 

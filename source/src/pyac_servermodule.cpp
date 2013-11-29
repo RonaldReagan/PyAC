@@ -75,7 +75,7 @@ static PyObject *py_getclient(PyObject *self, PyObject *args) {
 
 static PyObject *py_killclient(PyObject *self, PyObject *args) {
     int tcn,acn,gib,weap ;
-    if(!PyArg_ParseTuple(args,  "ii|i",&acn,&tcn,&gib,&weap ))
+    if(!PyArg_ParseTuple(args,  "ii|i",&acn,&tcn,&gib,&weap )) return NULL;
     
     if(!valid_client(tcn)) return Py_None;
     if(!valid_client(acn)) return Py_None ;
@@ -85,12 +85,49 @@ static PyObject *py_killclient(PyObject *self, PyObject *args) {
     return Py_None;
 }
 
+static PyObject *py_spawnclient(PyObject *self, PyObject *args) {
+    int tcn,health,armour=-1,ammo=-1,mag=-1,weapon=-1,primaryweapon=-1;
+    
+    if(!PyArg_ParseTuple(args,  "ii|iiiii",&tcn, &health, &armour, &ammo, &mag, &weapon, &primaryweapon)) return NULL;
+    
+    if(!valid_client(tcn)) return Py_None;
+    if(team_isspect(clients[tcn]->team)) return Py_None;
+    clientstate &gs = clients[tcn]->state;
+
+    if(armour==-1) armour = 0;
+    if(primaryweapon == -1) primaryweapon = gs.primary;
+
+    gs.respawn();
+    gs.spawnstate(smode);
+    gs.lifesequence++;
+    if (ammo != -1) {
+        gs.ammo[primaryweapon] = ammo;
+    }
+    if (mag != -1) {
+        gs.mag[primaryweapon] = mag;
+    }
+    if(primaryweapon != -1 || !(primaryweapon >= 0 && primaryweapon < NUMGUNS)) {
+        gs.primary = gs.nextprimary = primaryweapon;
+    }
+    if(weapon != -1 || !(weapon >= 0 && weapon < NUMGUNS)) {
+        gs.gunselect = weapon;
+    }
+    gs.health = health;
+    gs.armour = armour;
+
+    sendf(tcn, 1, "ri7vv", SV_SPAWNSTATE, gs.lifesequence, gs.health, gs.armour, gs.primary,
+        gs.gunselect, m_arena ? clients[tcn]->spawnindex : -1, NUMGUNS, gs.ammo, NUMGUNS, gs.mag);
+    gs.lastspawn = gamemillis;
+    return Py_None;
+}
+
 static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
     {"getClient", py_getclient, METH_VARARGS, "Gets a client dictionary."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
-	{NULL, NULL, 0, NULL}
+    {"spawnClient", py_spawnclient, METH_VARARGS, "Kills a cn as if tcn killed them."},
+	{NULL, NULL, 0, NULL},
 };
 
 PyMODINIT_FUNC
