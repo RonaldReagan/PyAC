@@ -46,12 +46,23 @@ API
 
 This will server as the API documentation, until a better solution is had.
 
-###Hooks
+###Events
+Events are functions that get called when actions happen.
+
+####Events
+With normal these normal events, the return value is ignored.
 
 * **initEnd**() - *Called when the init phase of server startup has finished (all config files loaded). Remember that the plugin gets loaded before any other initialization occurs.*
 * **serverExtension**(int cn, str ext, str ext_text) - *Called when a user uses a /serverextension, and no matching server extensions have been found.*
 * **clientDisconnect**(int cn, int reason) - *Called when a client disconnects for any reason. The specific reason is given by the argument 'reason'*
 * **clientConnect**(int cn, int discreason) - *Called when a client connects. If the client fails to connect (matches blacklist, offends a whitelist entry), then the client will be immediately disconnected and the reason for disconnection will be given in discreason.*
+
+####PolicyEvents
+With these policy events, the return value is used to alter the action of the server. If boolean, True will block the event, False will leave it unchanged.
+
+* **clientSpawn**(int cn) - *Triggered when a client spawns.*
+* **clientDeath**(int acn, int tcn, int gun, int damage) - *Triggered when a client dies*
+* **masterRegister**(str masterhost, int masterport) - *Triggered when the server tries to register with the masterserver*
 
 ###Modules
 
@@ -62,6 +73,9 @@ Methods defined here:
 
 * **acserver.log**(str msg, [int level]) - *Logs a message, level defaults to info.*
 * **acserver.msg**(str msg, [int cn]) - *Sends a message to a client, if cn is -1 (default) then it sends the message to all clients.*
+* **acserver.killClient**(int acn, int tcn [bool (int) gib, int weap]) - *Makes it as if acn killed tcn with given weapon, and specifies if it was gib or not*
+* **acserver.spawnClient**(int cn, int health, [int armour, int ammo, int mag, int weapon, int primaryweapon]) - *Spawn client with specified starting stats.*
+* **acserver.getClient**(int cn) - *Returns a dictionary with client stats*
 
 ####core
 Core functionality. These are modules that are required for server functionality.

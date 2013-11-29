@@ -126,7 +126,7 @@ static PyMethodDef ModuleMethods[] = {
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
     {"getClient", py_getclient, METH_VARARGS, "Gets a client dictionary."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
-    {"spawnClient", py_spawnclient, METH_VARARGS, "Kills a cn as if tcn killed them."},
+    {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
 	{NULL, NULL, 0, NULL},
 };
 
