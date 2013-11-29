@@ -934,7 +934,7 @@ struct serverconfigfile
 struct servercommandline
 {
     int uprate, serverport, syslogfacility, filethres, syslogthres, maxdemos, maxclients, kickthreshold, banthreshold, verbose, incoming_limit, afk_limit, ban_time, demotimelocal;
-    const char *ip, *master, *logident, *serverpassword, *adminpasswd, *demopath, *maprot, *pwdfile, *blfile, *nbfile, *infopath, *motdpath, *forbidden, *killmessages, *demofilenameformat, *demotimestampformat;
+    const char *ip, *master, *logident, *serverpassword, *adminpasswd, *demopath, *maprot, *pwdfile, *blfile, *nbfile, *infopath, *motdpath, *forbidden, *killmessages, *demofilenameformat, *demotimestampformat, *py_global_config;
     bool logtimestamp, demo_interm, loggamestatus;
     string motd, servdesc_full, servdesc_pre, servdesc_suf, voteperm, mapperm;
     int clfilenesting;
@@ -945,6 +945,7 @@ struct servercommandline
                             ip(""), master(NULL), logident(""), serverpassword(""), adminpasswd(""), demopath(""),
                             maprot("config/maprot.cfg"), pwdfile("config/serverpwd.cfg"), blfile("config/serverblacklist.cfg"), nbfile("config/nicknameblacklist.cfg"),
                             infopath("config/serverinfo"), motdpath("config/motd"), forbidden("config/forbidden.cfg"), killmessages("config/serverkillmessages.cfg"),
+                            py_global_config("pyserver.conf"),
                             logtimestamp(false), demo_interm(false), loggamestatus(true),
                             clfilenesting(0)
     {
@@ -985,6 +986,10 @@ struct servercommandline
                     {
                         int ai = atoi(arg+13);
                         mastertype = ai > 0 ? 1 : 0;
+                    }
+                    else if(!strncmp(arg, "--py_global_config=", 19))
+                    {
+                        py_global_config = arg+19;
                     }
                     else return false;
                     break;

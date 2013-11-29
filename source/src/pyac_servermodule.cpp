@@ -121,12 +121,65 @@ static PyObject *py_spawnclient(PyObject *self, PyObject *args) {
     return Py_None;
 }
 
+static PyObject *py_getcommandline(PyObject *self) {
+    #define PY_SCL(name) #name,scl.name
+    #define PY_SCL_B(name) #name,scl.name ? 1:0
+    //                 //  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
+    return Py_BuildValue("{si,si,si,si,si,si,si,si,si,si,si,si,si,si,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,ss,si,si,si,ss,ss,ss,ss,ss}",
+                         PY_SCL(uprate),                      // 1
+                         PY_SCL(serverport),                  // 2
+                         PY_SCL(syslogfacility),              // 3
+                         PY_SCL(filethres),                   // 4
+                         PY_SCL(syslogthres),                 // 5
+                         PY_SCL(maxdemos),                    // 6
+                         PY_SCL(maxclients),                  // 7
+                         PY_SCL(kickthreshold),               // 8
+                         PY_SCL(banthreshold),                // 9
+                         PY_SCL(verbose),                     // 10
+                         PY_SCL(incoming_limit),              // 11
+                         PY_SCL(afk_limit),                   // 12
+                         PY_SCL(ban_time),                    // 13
+                         PY_SCL(demotimelocal),               // 14
+                         
+                         PY_SCL(ip),                          // 15
+                         PY_SCL(master),                      // 16
+                         PY_SCL(logident),                    // 17
+                         PY_SCL(serverpassword),              // 18
+                         PY_SCL(adminpasswd),                 // 19
+                         PY_SCL(demopath),                    // 20
+                         PY_SCL(maprot),                      // 21
+                         PY_SCL(pwdfile),                     // 22
+                         PY_SCL(blfile),                      // 23
+                         PY_SCL(nbfile),                      // 24
+                         PY_SCL(infopath),                    // 25
+                         PY_SCL(motdpath),                    // 26
+                         PY_SCL(forbidden),                   // 27
+                         PY_SCL(killmessages),                // 28
+                         PY_SCL(demofilenameformat),          // 29
+                         PY_SCL(demotimestampformat),         // 30
+                         PY_SCL(py_global_config),            // 31
+                         
+                         PY_SCL_B(logtimestamp),              // 32
+                         PY_SCL_B(demo_interm),               // 33
+                         PY_SCL_B(loggamestatus),             // 34
+                         
+                         PY_SCL(motd),                        // 35
+                         PY_SCL(servdesc_full),               // 36
+                         PY_SCL(servdesc_pre),                // 37
+                         PY_SCL(servdesc_suf),                // 38
+                         PY_SCL(voteperm)                     // 39
+                         );
+    #undef PY_SCL
+    #undef PY_SCL_B
+}
+
 static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
     {"getClient", py_getclient, METH_VARARGS, "Gets a client dictionary."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
+    {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_VARARGS, "Retrieves a dictionary of all of the commandline options."},
 	{NULL, NULL, 0, NULL},
 };
 

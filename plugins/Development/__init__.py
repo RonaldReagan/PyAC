@@ -58,3 +58,7 @@ def clientspawn(cn):
 def masterRegister(host,port):
     acserver.log('Block master registration.')
     return True
+
+optsdict = acserver.getCmdLineOptions()
+for key in optsdict:
+    optiondict = acserver.log('%s: %r'%(key,optsdict[key]))

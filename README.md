@@ -76,6 +76,7 @@ Methods defined here:
 * **acserver.killClient**(int acn, int tcn [bool (int) gib, int weap]) - *Makes it as if acn killed tcn with given weapon, and specifies if it was gib or not*
 * **acserver.spawnClient**(int cn, int health, [int armour, int ammo, int mag, int weapon, int primaryweapon]) - *Spawn client with specified starting stats.*
 * **acserver.getClient**(int cn) - *Returns a dictionary with client stats*
+* **acserver.getCmdLineOptions**() - *Returns a dictionary with all of the server commandline options.* **TODO: Better name?**
 
 ####core
 Core functionality. These are modules that are required for server functionality.
