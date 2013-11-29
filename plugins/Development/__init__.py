@@ -53,3 +53,8 @@ def clientspawn(cn):
     if blockSpawns:
         acserver.log('Blocked spawn of %s'%(acserver.getClient(cn)['name']))
     return blockSpawns
+    
+@policyHandler('masterRegister')
+def masterRegister(host,port):
+    acserver.log('Block master registration.')
+    return True
