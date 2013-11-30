@@ -62,6 +62,7 @@ With these policy events, the return value is used to alter the action of the se
 
 * **clientSpawn**(int cn) - *Triggered when a client spawns.*
 * **clientDeath**(int acn, int tcn, int gun, int damage) - *Triggered when a client dies*
+* **clientSay**(int cn, str text, bool isteam, bool isme) - *Triggered when a client talks in the server*
 * **masterRegister**(str masterhost, int masterport) - *Triggered when the server tries to register with the masterserver*
 
 ###Modules

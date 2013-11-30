@@ -6,6 +6,7 @@ acserver.log("Wee! Development! Module is initalized!",ACLOG_INFO)
 
 blockDeaths = False
 blockSpawns = False
+blockSpeech = False
 
 @eventHandler('serverExtension')
 def serverext(cn,ext,ext_text):
@@ -26,11 +27,15 @@ def serverext(cn,ext,ext_text):
             blockDeaths = True
         if ext_text.lower() =='spawns':
             blockSpawns = True
+        if ext_text.lower() =='speech':
+            blockSpeech = True
     if ext == "allow":
         if ext_text.lower() =='deaths':
             blockDeaths = False
         if ext_text.lower() =='spawns':
             blockSpawns = False
+        if ext_text.lower() =='speech':
+            blockSpeech = True
 
 @eventHandler('clientDisconnect')
 def serverext(cn,reason):
@@ -53,6 +58,12 @@ def clientspawn(cn):
     if blockSpawns:
         acserver.log('Blocked spawn of %s'%(acserver.getClient(cn)['name']))
     return blockSpawns
+    
+@policyHandler('clientSay')
+def clientsay(cn, text, isteam, isme):
+    if blockSpeech:
+        acserver.log('Blocked speech of %s'%(acserver.getClient(cn)['name']))
+    return blockSpeech
     
 @policyHandler('masterRegister')
 def masterRegister(host,port):

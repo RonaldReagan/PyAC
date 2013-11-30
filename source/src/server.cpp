@@ -2821,6 +2821,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 trimtrailingwhitespace(text);
                 if(*text)
                 {
+                    if (triggerFunc("clientSay", true, "isii", cl->clientnum, text, 1, type == SV_TEAMTEXTME ? 1:0)) break;
                     bool canspeech = forbiddenlist.canspeech(text);
                     if(!spamdetect(cl, text) && canspeech) // team chat
                     {
@@ -2854,6 +2855,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 trimtrailingwhitespace(text);
                 if(*text)
                 {
+                    if (triggerFunc("clientSay", true, "isii", cl->clientnum, text, 0, type == SV_TEXTME ? 1:0)) break;
                     bool canspeech = forbiddenlist.canspeech(text);
                     if(!spamdetect(cl, text) && canspeech)
                     {
