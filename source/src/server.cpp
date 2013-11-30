@@ -3852,7 +3852,9 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
         silenttimeupdate(gamemillis, gametimemaximum);
     }
 #endif
-
+    
+    triggerFunc("serverTick", false, "ii", gamemillis,servmillis);
+    
     if(minremain>0)
     {
         processevents();

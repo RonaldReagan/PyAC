@@ -8,6 +8,15 @@ blockDeaths = False
 blockSpawns = False
 blockSpeech = False
 
+mpt_total = 0
+mpt_last = 0
+mpt_count = 0
+mpt_millis = 0
+
+def mpt_to_tps(mpt):
+    print(mpt)
+    return 1000.0/mpt
+
 @eventHandler('serverExtension')
 def serverext(cn,ext,ext_text):
     global blockDeaths, blockSpawns
@@ -36,6 +45,8 @@ def serverext(cn,ext,ext_text):
             blockSpawns = False
         if ext_text.lower() =='speech':
             blockSpeech = True
+    if ext == "tps":
+        acserver.msg("Current: %d, Average: %f"%(mpt_to_tps(mpt_last),mpt_to_tps(float(mpt_total)/mpt_count)))
 
 @eventHandler('clientDisconnect')
 def serverext(cn,reason):
@@ -69,3 +80,15 @@ def clientsay(cn, text, isteam, isme):
 def masterRegister(host,port):
     acserver.log('Block master registration.')
     return True
+
+@eventHandler('serverTick')
+def serverTick(gamemillis, servmillis):
+    global mpt_total, mpt_count, mpt_last, mpt_millis
+    if mpt_millis == -1:
+        mpt_millis = servmillis
+    else:
+        diff = servmillis - mpt_millis
+        mpt_total += diff
+        mpt_count += 1
+        mpt_last = diff
+        mpt_millis = servmillis
