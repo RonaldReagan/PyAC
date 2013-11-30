@@ -4,6 +4,7 @@ bin/native_server
 ac_server
 serverlog_*
 pyserver.conf
+plugins/Development
 
 ###Python###
 # Byte-compiled / optimized / DLL files
