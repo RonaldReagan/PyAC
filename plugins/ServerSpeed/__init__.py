@@ -12,7 +12,7 @@ def mpt_to_tps(mpt):
 @eventHandler('serverExtension')
 def serverext(cn,ext,ext_text):
     if ext == "tps":
-        acserver.msg("Current: %d, Average: %f"%(mpt_to_tps(mpt_last),mpt_to_tps(float(mpt_total)/mpt_count)))
+        acserver.msg("\fBCurrent TPS: \f9%d\fB, Average: \f9%.2f"%(mpt_to_tps(mpt_last),mpt_to_tps(float(mpt_total)/mpt_count)))
 
 @eventHandler('serverTick')
 def serverTick(gamemillis, servmillis):
