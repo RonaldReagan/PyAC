@@ -30,14 +30,14 @@ class PolicyEventManager(EventManager):
     def __init__(self):
         EventManager.__init__(self)
     def trigger(self, event, args=()):
+        blockevent = False
         try:
             for event in self.events[event]:
-                    if not event(*args):
-                        return False
-
+                blockevent = event(*args) or blockevent
         except KeyError:
-            return True
-        return True
+            return False
+            
+        return blockevent
 
 server_events = EventManager()
 policy_events = PolicyEventManager()
