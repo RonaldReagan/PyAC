@@ -173,13 +173,28 @@ static PyObject *py_getcommandline(PyObject *self) {
     #undef PY_SCL_B
 }
 
+static PyObject *py_getadminpasswords(PyObject *self) {
+    PyObject *retTuple;
+    
+    if (!passwords.adminpwds.length()) return Py_None;
+    
+    retTuple = PyTuple_New(passwords.adminpwds.length());
+    loopv(passwords.adminpwds)
+    {
+        PyObject *tmpTuple = Py_BuildValue("sii",passwords.adminpwds[i].pwd,passwords.adminpwds[i].line,passwords.adminpwds[i].denyadmin ? 1:0);
+        PyTuple_SetItem(retTuple, i, tmpTuple);
+    }
+    return retTuple; 
+}
+
 static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
     {"getClient", py_getclient, METH_VARARGS, "Gets a client dictionary."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
-    {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_VARARGS, "Retrieves a dictionary of all of the commandline options."},
+    {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_NOARGS, "Retrieves a dictionary of all of the commandline options."},
+    {"getAdminPasswords", (PyCFunction)py_getadminpasswords, METH_NOARGS, "Retrieves a tuple of all of the passwords."},
 	{NULL, NULL, 0, NULL},
 };
 

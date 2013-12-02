@@ -80,6 +80,7 @@ Methods defined here:
 * **acserver.spawnClient**(int cn, int health, [int armour, int ammo, int mag, int weapon, int primaryweapon]) - *Spawn client with specified starting stats.*
 * **acserver.getClient**(int cn) - *Returns a dictionary with client stats*
 * **acserver.getCmdLineOptions**() - *Returns a dictionary with all of the server commandline options.* **TODO: Better name?**
+* **acserver.getAdminPasswords**() - *Returns a tuple of all of the admin passwords. Structured like: ((str password,int linenumber, bool denyadmin),(anotherpassword))*
 
 ####core
 Core functionality. These are modules that are required for server functionality.
