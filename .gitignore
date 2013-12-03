@@ -5,7 +5,7 @@ ac_server
 serverlog_*
 pyserver.conf
 plugins/Development
-user.db #Used in plugins
+users.db
 
 ###Python###
 # Byte-compiled / optimized / DLL files
