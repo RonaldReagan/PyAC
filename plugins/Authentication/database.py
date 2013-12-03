@@ -33,6 +33,9 @@ class User(Base):
     def checkPassword(self, pwd):
         hashed = bcrypt.hashpw(pwd.encode('ascii', 'ignore'),self.password.encode('ascii', 'ignore'))
         return hashed == self.password
+    
+    def setPassword(self,pwd):
+        self.password = bcrypt.hashpw(pwd,bcrypt.gensalt())
 
 class Permission(Base):
     __tablename__ = 'permissions'
@@ -54,7 +57,7 @@ def makeUser(name,password,email):
     """
     usr = User()
     usr.name = name
-    usr.password = bcrypt.hashpw(password,bcrypt.gensalt())
+    usr.setPassword(password)
     usr.email = email
     
     return usr

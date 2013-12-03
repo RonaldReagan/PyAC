@@ -16,7 +16,7 @@ DBPWD = ''
 
 engine = None
 
-AuthenticatedClients = {} #Key: CN Value: User Class
+AuthenticatedClients = {} #Key: CN, Value: User Class
 
 def main():
     global DBURL, DBType, DBUser, DBPWD, engine
@@ -32,6 +32,14 @@ def main():
     DBDataBase = conf.get('Settings', 'db_database')
     
     engine = db.setup(DBType,DBURL,DBUser,DBPWD,DBDataBase)
+    
+    session = getSession()
+    if session.query(db.User).count() == 0:
+        acserver.log("No users exist, creating root account.")
+        session.add(db.makeUser("root","pyacserver",""))
+        session.commit()
+        
+    session.close()
 
 def getSession():
     session = sessionmaker(bind=engine)()
@@ -42,7 +50,7 @@ def serverext(cn,ext,ext_text):
     if ext == "auth":
         args = ext_text.split()
         if len(args) != 2:
-            acserver.msg("\f9Invalid arguments to auth", cn)
+            acserver.msg("\f9Invalid arguments to auth/", cn)
             return
             
         name, pwd = args
@@ -57,7 +65,7 @@ def serverext(cn,ext,ext_text):
             
         if usr.checkPassword(pwd):
             AuthenticatedClients[cn] = usr
-            acserver.msg("\fJLogin! Succeeded",cn)
+            acserver.msg("\fJLogin Succeeded!",cn)
             acserver.log("Authenticated client (%d) %s as %s"%(cn,acserver.getClient(cn)['name'],name))
         else:
             acserver.msg("\f9Invalid login!",cn)
