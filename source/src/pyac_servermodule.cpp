@@ -187,6 +187,29 @@ static PyObject *py_getadminpasswords(PyObject *self) {
     return retTuple; 
 }
 
+static PyObject *py_setgamelimit(PyObject *self, PyObject *args) {
+    int timeoffset;
+    
+    if(!PyArg_ParseTuple(args,  "i",&timeoffset)) return NULL;
+    
+    gamelimit = timeoffset;
+    checkintermission();
+    
+    return PyInt_FromLong(gamelimit);
+}
+
+static PyObject *py_getgamelimit(PyObject *self) {
+    return PyInt_FromLong(gamelimit);
+}
+
+static PyObject *py_getgamemillis(PyObject *self) {
+    return PyInt_FromLong(gamelimit);
+}
+
+static PyObject *py_getminremain(PyObject *self) {
+    return PyInt_FromLong(minremain);
+}
+
 static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
@@ -195,6 +218,10 @@ static PyMethodDef ModuleMethods[] = {
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
     {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_NOARGS, "Retrieves a dictionary of all of the commandline options."},
     {"getAdminPasswords", (PyCFunction)py_getadminpasswords, METH_NOARGS, "Retrieves a tuple of all of the passwords."},
+    {"setGameLimit", py_setgamelimit, METH_VARARGS, "Sets the time limit for the game."},
+    {"getGameLimit", (PyCFunction)py_getgamelimit, METH_NOARGS, "Gets the time limit for the game."},
+    {"getGameMillis", (PyCFunction)py_getgamemillis, METH_NOARGS, "Gets the game spent in the game."},
+    {"getMinRemain", (PyCFunction)py_getminremain, METH_NOARGS, "Gets the number of minutes remaining."},
 	{NULL, NULL, 0, NULL},
 };
 
