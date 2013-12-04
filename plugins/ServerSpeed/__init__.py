@@ -1,5 +1,8 @@
 import acserver
 from core.events import eventHandler
+from core.plugins import plugins
+
+auth = None
 
 mpt_total = 0
 mpt_last = 0
@@ -12,7 +15,10 @@ def mpt_to_tps(mpt):
 @eventHandler('serverExtension')
 def serverext(cn,ext,ext_text):
     if ext == "tps":
-        acserver.msg("\fBCurrent TPS: \f9%d\fB, Average: \f9%.2f"%(mpt_to_tps(mpt_last),mpt_to_tps(float(mpt_total)/mpt_count)))
+        if auth.hasPermission(cn, "useTPS"):
+            acserver.msg("\fBCurrent TPS: \f9%d\fB, Average: \f9%.2f"%(mpt_to_tps(mpt_last),mpt_to_tps(float(mpt_total)/mpt_count)))
+        else:
+            acserver.msg("\f3You don't have access to that command!",cn)
 
 @eventHandler('serverTick')
 def serverTick(gamemillis, servmillis):
@@ -25,3 +31,13 @@ def serverTick(gamemillis, servmillis):
         mpt_count += 1
         mpt_last = diff
         mpt_millis = servmillis
+
+#Lets make the plugin loader happy.
+def main(plugin):
+    pass
+
+@eventHandler('initEnd')
+def initend():
+    global auth
+    auth = plugins['Authentication'].module
+    auth.addPermissionIfMissing("useTPS","Allows a user to use the tps command")
