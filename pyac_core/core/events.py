@@ -22,7 +22,8 @@ class EventManager:
                 except:
                     exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
                     acserver.log('Uncaught exception occured in event handler.',ACLOG_ERROR)
-                    acserver.log(traceback.format_exc(),ACLOG_ERROR)
+                    for line in traceback.format_exc().split('\n'):
+                        acserver.log(line,ACLOG_ERROR)
         except KeyError:
             pass
 
