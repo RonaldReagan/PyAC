@@ -35,10 +35,17 @@ def main(self):
     session.close()
 
 def _getSession():
+    """
+        Returns the session
+    """
     session = sessionmaker(bind=engine)()
     return session
 
 def getSession(f):
+    """
+        Decorator, passes the session as the first argument. Closes it
+        automatically afterwards
+    """
     def wrapper(*args,**kwargs):
         s = _getSession()
         return f(*[s]+list(args),**kwargs)

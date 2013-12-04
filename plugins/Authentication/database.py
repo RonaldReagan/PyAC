@@ -8,6 +8,13 @@ import bcrypt
 Base = declarative_base()
 
 def setup(dbtype, url, user, pwd, databasename):
+    """
+        Sets up the engine according to the settings provided. Thus far can set
+        up 'sqlite3' and 'mysql' databases.
+        
+        Returns the engine
+    """
+    
     if dbtype == "sqlite3":
         engine = create_engine('sqlite:///%s'%url)
     elif dbtype == "mysql":
@@ -31,10 +38,17 @@ class User(Base):
     permissions = relationship("Permission",secondary="userspermissions")
     
     def checkPassword(self, pwd):
+        """
+            Returns True if pwd matches user's hashed password. False if it doesn't.
+        """
         hashed = bcrypt.hashpw(pwd.encode('ascii', 'ignore'),self.password.encode('ascii', 'ignore'))
         return hashed == self.password
     
     def setPassword(self,pwd):
+        """
+            Sets the users's password.
+            Use this method as it incorperates bcrypt for password storage
+        """
         self.password = bcrypt.hashpw(pwd,bcrypt.gensalt())
 
 class Permission(Base):
@@ -76,6 +90,9 @@ def getUser(session, username):
     return session.query(User).filter(User.name==username).one()
     
 if __name__ == "__main__":
+    """
+        Interactive prompt for database manipulation.
+    """
     import sys
     from sqlalchemy.orm import sessionmaker
     from ConfigParser import ConfigParser

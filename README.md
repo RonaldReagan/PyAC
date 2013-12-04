@@ -88,7 +88,22 @@ Core functionality. These are modules that are required for server functionality
 ####core.events
 
 ####core.plugins
-This plugin should not be used manually.
+This module is used to load the plugins. The plugin should be in a folder laid out as such:
+
+    pluginfolder/
+      __init__.py
+      plugin.conf
+
+The file plugin.conf is the configuration file for the plugin. It must define these settings: Plugin.author, Plugin.name, Plugin.version, Plugin.enable. The most basic plugin.conf will look like this:
+
+	author = unarmed
+	name = Hello World
+	version = 1.0
+	enable = yes
+
+These are required, however only name and enable are used internally. enable is used to specify if you want your plugin to run. name must not be the same as any other plugin installed, otherwise unexpected errors will occur when running the plugin.
+
+The \__init__.py file is required, as the plugin is loaded as a module. When it is loaded, the main() method of the plugin is called. Although the plugin will still load correctly without a main() method, an unseemly warning is called. When main() is called, an argument is passed as the first parameter, 'self'. This is the Plugin class that is assigned to the plugin. This can be used to access its configuration file and other such things.
 
 ####core.logging
 This module defines constants used with *acserver.log*
