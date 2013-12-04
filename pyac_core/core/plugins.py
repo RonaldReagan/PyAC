@@ -42,9 +42,13 @@ class Plugin:
         if self.isenabled:
             self.module = __import__(os.path.basename(self.path))
             try:
-                self.module.main(self) #Call the main, passing the reference to the module.
+                #Reference it first to catch it not existing. Not some sort of internal error.
+                main = self.module.main #Call the main, passing the reference to the module.
             except AttributeError:
                 acserver.log("No main function in %s"%self.path,ACLOG_WARNING)
+                return
+            
+            main(self)
                 
     def unloadModule(self):
         if self.isenabled:
