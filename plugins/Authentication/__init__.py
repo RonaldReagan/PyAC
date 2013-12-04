@@ -9,22 +9,15 @@ from core.logging import *
 
 from Authentication import database as db
 
-DBURL = ''
-DBType = ''
-DBUser = ''
-DBPWD = ''
-
 engine = None
 
 AuthenticatedClients = {} #Key: CN, Value: User Class
 
-def main():
-    global DBURL, DBType, DBUser, DBPWD, engine
+def main(self):
+    global engine
     
-    # This is the wrong way to get your config file, but until I make the correct way...
-    conf = ConfigParser({'db_url':'users.db','db_user':'','db_pwd':'','db_type':'sqlite3','db_database':''})
-    conf.read('./plugins/Authentication/plugin.conf')
-
+    conf = self.getConf({'db_url':'users.db','db_user':'','db_pwd':'','db_type':'sqlite3','db_database':''})
+    
     DBURL = conf.get('Settings', 'db_url')    
     DBType = conf.get('Settings', 'db_type')
     DBUser = conf.get('Settings', 'db_user')
@@ -108,4 +101,4 @@ def clientdisconect(cn,reason):
     if cn in AuthenticatedClients:
         del AuthenticatedClients[cn]
 
-main()
+# main()

@@ -13,6 +13,7 @@ from ConfigParser import ConfigParser, NoOptionError
 
 import acserver
 from core.config import Config
+from core.logging import *
 
 plugins = {}
 paths = ['./plugins']
@@ -20,8 +21,10 @@ paths = ['./plugins']
 class Plugin:
     def __init__(self, path, config_path, forcedisabled):
         self.path = path
-        conf = ConfigParser()
-        conf.read(config_path)
+        self.config_path = config_path
+        
+        conf = self.getConf()
+        
         self.isenabled = True
         try:
             self.isenabled = (conf.get('Plugin', 'enable') == 'yes')
@@ -38,11 +41,21 @@ class Plugin:
     def loadModule(self):
         if self.isenabled:
             self.module = __import__(os.path.basename(self.path))
+            try:
+                self.module.main(self) #Call the main, passing the reference to the module.
+            except AttributeError:
+                acserver.log("No main function in %s"%self.path,ACLOG_WARNING)
+                
     def unloadModule(self):
         if self.isenabled:
             del self.module
     def enabled(self):
         return self.isenabled
+    
+    def getConf(self,defaults={}):
+        conf = ConfigParser(defaults)
+        conf.read(self.config_path)
+        return conf
 
 def loadPlugins():
     plugins.clear()
