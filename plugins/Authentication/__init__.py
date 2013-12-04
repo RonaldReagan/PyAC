@@ -88,8 +88,7 @@ def hasPermission(cn,perm):
     """
     if cn not in AuthenticatedClients:
         return False
-    
-    acserver.log("%d %s %s"%(AuthenticatedClients[cn].id,AuthenticatedClients[cn].name,AuthenticatedClients[cn].email))
+        
     if AuthenticatedClients[cn].id == 1:
         return True
     else:
