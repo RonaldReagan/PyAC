@@ -13,6 +13,12 @@ engine = None
 
 AuthenticatedClients = {} #Key: CN, Value: User Class
 
+module_permissions = [
+            ('listUsers',"Allows the user to view all other users."),
+            ('addUser',"Allows the user create new users"),
+            ('grantPermission',"Allows the user grant permissions (caution, this is practically root access!)")
+            ]
+
 def main(self):
     global engine
     
@@ -28,16 +34,15 @@ def main(self):
     
     session = _getSession()
     if session.query(db.User).count() == 0:
-        acserver.log("No users exist, initalizing database.")
+        acserver.log("Authentication: No users exist, initalizing database.")
         
-        acserver.log(":  Creating root user.")
-        session.add(db.makeUser("root","pyacserver",""),ACLOG_VERBOSE)
+        acserver.log("Authentication: Creating root user.")
+        session.add(db.makeUser("root","pyacserver",""))
         
-        for perm in [('listUsers',"Allows the user to view all other users."),('addUser',"Allows the user create new users")]:
-            acserver.log(":  Adding permission %s"%perm[0],ACLOG_VERBOSE)
-            session.add(db.makePermission(*perm))
+    for perm in module_permissions:
+        addPermissionIfMissing(*perm)
         
-        session.commit()
+    session.commit()
         
     session.close()
 
@@ -58,6 +63,22 @@ def getSession(f):
         return f(*[s]+list(args),**kwargs)
         s.close()
     return wrapper
+
+@getSession
+def addPermissionIfMissing(session,perm,desc):
+    """
+        Adds a permission if it is nonexistant.
+        Returns True if it got added, False if it didn't.
+    """
+    try:
+        db.getPerm(session,perm)
+        return False
+    except NoResultFound:
+        session.add(db.makePermission(perm,desc))
+        acserver.log("Authentication: Adding permission %s"%perm)
+        session.commit()
+        return True
+        
 
 def hasPermission(cn,perm):
     """
@@ -134,32 +155,35 @@ def serverext(session,cn,ext,ext_text):
             acserver.msg("\f3You don't have access to that command!",cn)
     
     if ext == "grantperm":
-        args = ext_text.split()
-        if len(args) != 2:
-            acserver.msg("\f9Invalid arguments to grantperm", cn)
-            return
+        if hasPermission(cn,'grantPermission'):
+            args = ext_text.split()
+            if len(args) != 2:
+                acserver.msg("\f9Invalid arguments to grantperm", cn)
+                return
             
-        username,permname = args
+            username,permname = args
         
-        try:
-            user = db.getUser(session,username)
-        except NoResultFound:
-            acserver.msg("\f3User not found!",cn)
-            return
+            try:
+                user = db.getUser(session,username)
+            except NoResultFound:
+                acserver.msg("\f3User not found!",cn)
+                return
         
-        try:
-            perm = db.getPerm(session,permname)
-        except NoResultFound:
-            acserver.msg("\f3Permission does not exist!",cn)
-            return
+            try:
+                perm = db.getPerm(session,permname)
+            except NoResultFound:
+                acserver.msg("\f3Permission does not exist!",cn)
+                return
         
-        if perm in user.permissions:
-            acserver.msg("\f3User already has that permission!",cn)
-            return
+            if perm in user.permissions:
+                acserver.msg("\f3User already has that permission!",cn)
+                return
+            else:
+                user.permissions.append(perm)
+                session.commit()
+                acserver.msg("\fJPermission granted successfully!",cn)
         else:
-            user.permissions.append(perm)
-            session.commit()
-            acserver.msg("\fJPermission granted successfully!",cn)
+            acserver.msg("\f3You don't have access to that command!",cn)
             
 
 @eventHandler('clientDisconnect')
