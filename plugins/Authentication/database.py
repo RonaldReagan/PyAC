@@ -41,12 +41,22 @@ class Permission(Base):
     __tablename__ = 'permissions'
     id = Column(Integer, primary_key=True)
     name = Column(String(64), unique=True)
+    description = Column(String(255))
     
-    
+def makePermission(name,desc):
+    """
+        Returns a Permission object.
+        
+        Convience method for creating a permission.
+    """
+    p = Permission()
+    p.name = name
+    p.description = desc[:255]
+    return p
 
 def makeUser(name,password,email):
     """
-        Returns user object.
+        Returns User object.
         
         Just a cute shortcut to creating a user, does all of the password
         hashing for you.
@@ -62,6 +72,9 @@ def makeUser(name,password,email):
     
     return usr
 
+def getUser(session, username):
+    return session.query(User).filter(User.name==username).one()
+    
 if __name__ == "__main__":
     import sys
     from sqlalchemy.orm import sessionmaker
@@ -126,7 +139,7 @@ if __name__ == "__main__":
                 pname = raw_input("- Permission name: ")
             
             try:
-                usr = session.query(User).filter(User.name==uname).one()
+                usr = getUser(uname)
             except NoResultFound:
                 print("No user by that name")
                 continue

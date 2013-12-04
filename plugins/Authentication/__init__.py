@@ -33,7 +33,7 @@ def main():
     
     engine = db.setup(DBType,DBURL,DBUser,DBPWD,DBDataBase)
     
-    session = getSession()
+    session = _getSession()
     if session.query(db.User).count() == 0:
         acserver.log("No users exist, creating root account.")
         session.add(db.makeUser("root","pyacserver",""))
@@ -41,12 +41,20 @@ def main():
         
     session.close()
 
-def getSession():
+def _getSession():
     session = sessionmaker(bind=engine)()
     return session
 
+def getSession(f):
+    def wrapper(*args,**kwargs):
+        s = _getSession()
+        return f(*[s]+list(args),**kwargs)
+        s.close()
+    return wrapper
+
 @eventHandler('serverExtension')
-def serverext(cn,ext,ext_text):
+@getSession
+def serverext(session,cn,ext,ext_text):
     if ext == "auth":
         args = ext_text.split()
         if len(args) != 2:
@@ -54,13 +62,11 @@ def serverext(cn,ext,ext_text):
             return
             
         name, pwd = args
-        
-        session = getSession()
+
         try:
             usr = session.query(db.User).filter(db.User.name==name).one()
         except NoResultFound:
             acserver.msg("\f9Invalid login!",cn)
-            session.close()
             return
             
         if usr.checkPassword(pwd):
@@ -70,7 +76,6 @@ def serverext(cn,ext,ext_text):
         else:
             acserver.msg("\f9Invalid login!",cn)
         
-        session.close()
     
     if ext == "register":
         args = ext_text.split()
@@ -79,8 +84,6 @@ def serverext(cn,ext,ext_text):
             return
         
         name, email, pwd = args
-        
-        session = getSession()
         
         usrcount = session.query(db.User).filter(db.User.name==name).count()
         
@@ -92,16 +95,13 @@ def serverext(cn,ext,ext_text):
         session.add(db.makeUser(name,pwd,email))
         session.commit()
         acserver.msg("\fJCreated user! Please login now with the credentials you provided.",cn)
-        session.close()
     
     if ext == "listusers":
-        session = getSession()
         acserver.msg("\fHUser List:",cn)
         for usr in session.query(db.User).all():
             acserver.msg("\fI%s \f5- \fE%s"%(usr.name,usr.email),cn)
         
         acserver.msg("\fHEnd User List.",cn)
-        session.close()
 
 @eventHandler('clientDisconnect')
 def clientdisconect(cn,reason):
