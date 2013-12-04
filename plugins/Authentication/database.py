@@ -88,6 +88,9 @@ def makeUser(name,password,email):
 
 def getUser(session, username):
     return session.query(User).filter(User.name==username).one()
+
+def getPerm(session, pname):
+    return session.query(Permission).filter(Permission.name==pname).one()
     
 if __name__ == "__main__":
     """
@@ -156,7 +159,7 @@ if __name__ == "__main__":
                 pname = raw_input("- Permission name: ")
             
             try:
-                usr = getUser(uname)
+                usr = getUser(session,uname)
             except NoResultFound:
                 print("No user by that name")
                 continue
