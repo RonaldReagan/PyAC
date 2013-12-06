@@ -19,10 +19,10 @@ module_permissions = [
             ('grantPermission',"Allows the user grant permissions (caution, this is practically root access!)")
             ]
 
-def main(self):
+def main(plugin):
     global engine
     
-    conf = self.getConf({'db_url':'users.db','db_user':'','db_pwd':'','db_type':'sqlite3','db_database':''})
+    conf = plugin.getConf({'db_url':'users.db','db_user':'','db_pwd':'','db_type':'sqlite3','db_database':''})
     
     DBURL = conf.get('Settings', 'db_url')    
     DBType = conf.get('Settings', 'db_type')
