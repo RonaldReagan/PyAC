@@ -8,6 +8,7 @@ mpt_total = 0
 mpt_last = 0
 mpt_count = 0
 mpt_millis = 0
+counter = False
 
 def mpt_to_tps(mpt):
     return 1000.0/mpt
@@ -23,6 +24,10 @@ def serverext(cn,ext,ext_text):
 @eventHandler('serverTick')
 def serverTick(gamemillis, servmillis):
     global mpt_total, mpt_count, mpt_last, mpt_millis
+    
+    if not counter:
+        return
+        
     if mpt_millis == -1:
         mpt_millis = servmillis
     else:
@@ -38,6 +43,7 @@ def main(plugin):
 
 @eventHandler('initEnd')
 def initend():
-    global auth
+    global auth, counter
     auth = plugins['Authentication'].module
     auth.addPermissionIfMissing("useTPS","Allows a user to use the tps command")
+    counter = True
