@@ -210,6 +210,10 @@ static PyObject *py_getminremain(PyObject *self) {
     return PyInt_FromLong(minremain);
 }
 
+static PyObject *py_getservmillis(PyObject *self) {
+    return PyInt_FromLong(servmillis);
+}
+
 static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
@@ -220,8 +224,9 @@ static PyMethodDef ModuleMethods[] = {
     {"getAdminPasswords", (PyCFunction)py_getadminpasswords, METH_NOARGS, "Retrieves a tuple of all of the passwords."},
     {"setGameLimit", py_setgamelimit, METH_VARARGS, "Sets the time limit for the game."},
     {"getGameLimit", (PyCFunction)py_getgamelimit, METH_NOARGS, "Gets the time limit for the game."},
-    {"getGameMillis", (PyCFunction)py_getgamemillis, METH_NOARGS, "Gets the game spent in the game."},
+    {"getGameMillis", (PyCFunction)py_getgamemillis, METH_NOARGS, "Gets the time spent in the game."},
     {"getMinRemain", (PyCFunction)py_getminremain, METH_NOARGS, "Gets the number of minutes remaining."},
+    {"getServMillis", (PyCFunction)py_getservmillis, METH_NOARGS, "Gets the number of milliseconds that the server has been running."},
 	{NULL, NULL, 0, NULL},
 };
 

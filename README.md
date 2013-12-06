@@ -82,6 +82,9 @@ Methods defined here:
 * **acserver.getClient**(int cn) - *Returns a dictionary with client stats*
 * **acserver.getCmdLineOptions**() - *Returns a dictionary with all of the server commandline options.* **TODO: Better name?**
 * **acserver.getAdminPasswords**() - *Returns a tuple of all of the admin passwords. Structured like: ((str password,int linenumber, bool denyadmin),(anotherpassword))*
+* **acserver.getGameMillis**() - *Returns the time spent in the current game*
+* **acserver.getMinRemain**() - *Returns the minutes remaining*
+* **acserver.getServMillis**() - *Returns the number of milliseconds that the server has been running.*
 
 ####core
 Core functionality. These are modules that are required for server functionality.
