@@ -58,6 +58,7 @@ With normal these normal events, the return value is ignored.
 * **clientDisconnect**(int cn, int reason) - *Called when a client disconnects for any reason. The specific reason is given by the argument 'reason'*
 * **clientConnect**(int cn, int discreason) - *Called when a client connects. If the client fails to connect (matches blacklist, offends a whitelist entry), then the client will be immediately disconnected and the reason for disconnection will be given in discreason.*
 * **serverTick**(int gamemillis, int servermillis) - *Called once per server frame. gamemillis is the number of millis in the game, servermillis is the total number of millis since server startup.*
+* **serverEnd**() - *Called when the server stops. Nothing besides cleanup code should exist in here.*
 
 ####PolicyEvents
 With these policy events, the return value is used to alter the action of the server. If boolean, True will block the event, False will leave it unchanged.

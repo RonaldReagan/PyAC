@@ -3991,6 +3991,7 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
 
 void cleanupserver()
 {
+    triggerFunc("serverEnd", false, "");
     if(serverhost) { enet_host_destroy(serverhost); serverhost = NULL; }
     if(svcctrl)
     {
