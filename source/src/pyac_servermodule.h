@@ -19,4 +19,23 @@ struct serverpasswords : serverconfigfile
     int staticpasses;
 };
 
+#define CONFIG_MAXPAR 6
+
+struct configset
+{
+    string mapname;
+    union
+    {
+        struct { int mode, time, vote, minplayer, maxplayer, skiplines; };
+        int par[CONFIG_MAXPAR];
+    };
+};
+
+struct servermaprot : serverconfigfile
+{
+    vector<configset> configsets;
+    int curcfgset;
+};
+
 extern serverpasswords passwords;
+extern servermaprot maprot;

@@ -187,6 +187,53 @@ static PyObject *py_getadminpasswords(PyObject *self) {
     return retTuple; 
 }
 
+static PyObject *py_getmaprot(PyObject *self) {
+    PyObject *retTuple;
+    
+    if (!maprot.configsets.length()) return Py_None;
+    
+    retTuple = PyTuple_New(maprot.configsets.length());
+    loopv(maprot.configsets)
+    {
+        PyObject *tmpTuple = Py_BuildValue("siiiiii",
+                                           maprot.configsets[i].mapname,
+                                           maprot.configsets[i].mode,
+                                           maprot.configsets[i].time,
+                                           maprot.configsets[i].vote,
+                                           maprot.configsets[i].minplayer,
+                                           maprot.configsets[i].maxplayer,
+                                           maprot.configsets[i].skiplines
+                                          );
+        PyTuple_SetItem(retTuple, i, tmpTuple);
+    }
+    return retTuple; 
+}
+
+static PyObject *py_shrinkmaprot(PyObject *self) {
+    maprot.configsets.shrink(0);
+    return Py_None;
+}
+
+static PyObject *py_addmaptorot(PyObject *self, PyObject *args) {
+    char *mapname;
+    int mode,time,vote,minplayer=0,maxplayer=0,skiplines=0;
+    if(!PyArg_ParseTuple(args,  "siii|iii", &mapname,&mode,&time,&vote,&minplayer,&maxplayer,&skiplines))
+        return NULL;
+    
+    configset c;
+    copystring(c.mapname,mapname);
+    c.mode = mode;
+    c.time = time;
+    c.vote = vote;
+    c.minplayer = minplayer;
+    c.maxplayer = maxplayer;
+    c.skiplines = skiplines;
+    
+    maprot.configsets.add(c);
+    
+    return Py_None;
+}
+
 static PyObject *py_setgamelimit(PyObject *self, PyObject *args) {
     int timeoffset;
     
@@ -222,6 +269,9 @@ static PyMethodDef ModuleMethods[] = {
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
     {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_NOARGS, "Retrieves a dictionary of all of the commandline options."},
     {"getAdminPasswords", (PyCFunction)py_getadminpasswords, METH_NOARGS, "Retrieves a tuple of all of the passwords."},
+    {"getMaprot", (PyCFunction)py_getmaprot, METH_NOARGS, "Retrieves a tuple containing the maprot."},
+    {"clearMaprot", (PyCFunction)py_shrinkmaprot, METH_NOARGS, "Clears the maprot. Warning: You must add maps to the maprot after doing this!"},
+    {"addMapToRot", py_addmaptorot, METH_VARARGS, "Adds a map to the maprot."},
     {"setGameLimit", py_setgamelimit, METH_VARARGS, "Sets the time limit for the game."},
     {"getGameLimit", (PyCFunction)py_getgamelimit, METH_NOARGS, "Gets the time limit for the game."},
     {"getGameMillis", (PyCFunction)py_getgamemillis, METH_NOARGS, "Gets the time spent in the game."},
