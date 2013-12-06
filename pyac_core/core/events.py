@@ -1,6 +1,5 @@
 import sys
 import traceback
-from twisted.internet import reactor
 
 import acserver
 from core.logging import *
@@ -100,9 +99,5 @@ def onReload():
     server_events.events.clear()
 
 def update():
-    reactor.runUntilCurrent()
-    reactor.doIteration(0)
     triggerExecQueue()
-
-reactor.startRunning()
 
