@@ -5,6 +5,7 @@ extern void checkintermission();
 extern int servmillis, gamemillis, gamelimit, minremain;
 
 extern struct servercommandline scl;
+extern struct mapstats smapstats;
 
 struct pwddetail
 {

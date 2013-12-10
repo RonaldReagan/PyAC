@@ -64,13 +64,25 @@ static PyObject *py_getclient(PyObject *self, PyObject *args) {
                          "points",cl->state.points,              // 18
                          "lastshot",cl->state.lastshot,          // 19
                          "state",cl->state.state,                // 20
-                         "pos",cl->state.o.x,cl->state.o.x, cl->state.o.y,        // 21
+                         "pos",cl->state.o.x,cl->state.o.y, cl->state.o.z,        // 21
                          "health",cl->state.health,              // 22
                          "armour",cl->state.armour,              // 23
                          "primary",cl->state.primary,            // 24
                          "nextprimary",cl->state.nextprimary,    // 25
                          "gunselect",cl->state.gunselect         // 26
                          );
+}
+static PyObject *py_getclients(PyObject *self) {
+    PyObject *retTuple;
+    
+    if (clients.length()==0) return Py_None;
+    
+    retTuple = PyTuple_New(clients.length());
+    loopv(clients)
+    {   
+        PyTuple_SetItem(retTuple, i, PyInt_FromLong(clients[i]->clientnum));
+    }
+    return retTuple; 
 }
 
 static PyObject *py_killclient(PyObject *self, PyObject *args) {
@@ -234,6 +246,30 @@ static PyObject *py_addmaptorot(PyObject *self, PyObject *args) {
     return Py_None;
 }
 
+static PyObject *py_getmapinfo(PyObject *self) {
+    #define PY_MAPINFO(name) #name,smapstats.hdr.name
+    #define PY_MAPINFOE(name,e) #name,smapstats.hdr.name[e]
+//                        1  2  3  4  5  6  7  8       9  10
+    return Py_BuildValue("{ss,si,si,si,si,ss,si,s(iiii),si,si}",
+                           PY_MAPINFO(head),           //1
+                           PY_MAPINFO(version),        //2
+                           PY_MAPINFO(headersize),     //3
+                           PY_MAPINFO(sfactor),        //4
+                           PY_MAPINFO(numents),        //5
+                           PY_MAPINFO(maptitle),       //6
+                           PY_MAPINFO(waterlevel),     //7
+                           "watercolor",               //8
+                               smapstats.hdr.watercolor[0],
+                               smapstats.hdr.watercolor[1],
+                               smapstats.hdr.watercolor[2],
+                               smapstats.hdr.watercolor[3],
+                           PY_MAPINFO(maprevision),    //9
+                           PY_MAPINFO(ambient)         //10
+                          );
+    #undef PY_MAPINFO
+    #undef PY_MAPINFOE
+}
+
 static PyObject *py_setgamelimit(PyObject *self, PyObject *args) {
     int timeoffset;
     
@@ -265,6 +301,7 @@ static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
     {"getClient", py_getclient, METH_VARARGS, "Gets a client dictionary."},
+    {"getClients", (PyCFunction)py_getclients, METH_NOARGS, "Retrieves a tuple containing all of the clientnumbers on the server."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
     {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_NOARGS, "Retrieves a dictionary of all of the commandline options."},
@@ -272,6 +309,7 @@ static PyMethodDef ModuleMethods[] = {
     {"getMaprot", (PyCFunction)py_getmaprot, METH_NOARGS, "Retrieves a tuple containing the maprot."},
     {"clearMaprot", (PyCFunction)py_shrinkmaprot, METH_NOARGS, "Clears the maprot. Warning: You must add maps to the maprot after doing this!"},
     {"addMapToRot", py_addmaptorot, METH_VARARGS, "Adds a map to the maprot."},
+    {"getMapInfo", (PyCFunction)py_getmapinfo, METH_NOARGS, "Retrieves a tuple of the !"},
     {"setGameLimit", py_setgamelimit, METH_VARARGS, "Sets the time limit for the game."},
     {"getGameLimit", (PyCFunction)py_getgamelimit, METH_NOARGS, "Gets the time limit for the game."},
     {"getGameMillis", (PyCFunction)py_getgamemillis, METH_NOARGS, "Gets the time spent in the game."},
