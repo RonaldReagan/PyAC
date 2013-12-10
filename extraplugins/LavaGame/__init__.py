@@ -58,4 +58,4 @@ def servertick(gm,sm):
                 
             z = cl['pos'][2]
             if z < waterlevel and z > -256 and z < 256 and cl['state'] == 0:
-                acserver.killClient(cn,cn)
+                acserver.damageClient(cn,cn,1)
