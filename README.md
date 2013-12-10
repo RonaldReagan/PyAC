@@ -84,6 +84,7 @@ Methods defined here:
 * **acserver.killClient**(int acn, int tcn [bool (int) gib, int weap]) - *Makes it as if acn killed tcn with given weapon, and specifies if it was gib or not*
 * **acserver.spawnClient**(int cn, int health, [int armour, int ammo, int mag, int weapon, int primaryweapon]) - *Spawn client with specified starting stats.*
 * **acserver.getClient**(int cn) - *Returns a dictionary with client stats*
+* **acserver.setClient**(int cn, [int state, [int primary, [int gunselect, [int frags, [int deaths, [int health, [int armour, [int points, [int teamkills]]]]]]]]]) - *Takes keyword arguments and client's stats*
 * **acserver.forceTeam**(int cn, int team, [int reason]) - *Forces a client to the specified team.*
 * **acserver.getCmdLineOptions**() - *Returns a dictionary with all of the server commandline options.*
 * **acserver.getAdminPasswords**() - *Returns a tuple of all of the admin passwords. Structured like: ((str password,int linenumber, bool denyadmin),(anotherpassword))*

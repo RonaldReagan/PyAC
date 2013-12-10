@@ -1,6 +1,7 @@
 extern void sendservmsg(const char *msg, int cn);
 extern void sendf(int cn, int chan, const char *format, ...);
 extern void checkintermission();
+extern void sendresume(client &c, bool broadcast);
 
 extern int servmillis, gamemillis, gamelimit, minremain;
 

@@ -73,6 +73,40 @@ static PyObject *py_getclient(PyObject *self, PyObject *args) {
                          "team",cl->team                         // 27
                          );
 }
+
+static PyObject *py_setClientState(PyObject *self, PyObject *args, PyObject *keywds)
+{
+    int cn;
+    int state=INT_MAX, primary=INT_MAX, gunselect=INT_MAX, flagscore=INT_MAX, frags=INT_MAX, deaths=INT_MAX, health=INT_MAX, armour=INT_MAX, points=INT_MAX, teamkills=INT_MAX;
+
+    static char *kwlist[] = {"cn", "state", "primary", "gunselect", "flagscore", "frags", "deaths", "health", "armour", "points", "teamkills", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|iiiiiiiiii", kwlist,
+                                     &cn, &state, &primary, &gunselect, &flagscore, &frags, &deaths, &health, &armour, &points, &teamkills))
+        return NULL;
+    
+    if (!valid_client(cn)) return Py_None;
+    
+    client *cl = clients[cn];
+    
+    if(state >= 0 && state <= CS_SPECTATE) cl->state.state = state;
+    if(primary >= 0 && primary < NUMGUNS) cl->state.primary = primary;
+    if(gunselect >= 0 && gunselect < NUMGUNS) cl->state.gunselect = gunselect;
+    
+    #define PY_SETSTATE(attr) if(attr != INT_MAX) cl->state.attr = attr
+    PY_SETSTATE(flagscore);
+    PY_SETSTATE(frags);
+    PY_SETSTATE(deaths);
+    PY_SETSTATE(health);
+    PY_SETSTATE(armour);
+    PY_SETSTATE(points);
+    PY_SETSTATE(teamkills);
+    #undef PY_SETSTATE
+    
+    sendresume(*cl,true);
+    return Py_None; 
+}
+
 static PyObject *py_getclients(PyObject *self) {
     PyObject *retTuple;
     
@@ -317,6 +351,7 @@ static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
     {"getClient", py_getclient, METH_VARARGS, "Gets a client dictionary."},
+    {"setClient", (PyCFunction)py_setClientState, METH_VARARGS | METH_KEYWORDS, "Sets the client's attributes"},
     {"getClients", (PyCFunction)py_getclients, METH_NOARGS, "Retrieves a tuple containing all of the clientnumbers on the server."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
