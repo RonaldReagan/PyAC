@@ -15,6 +15,8 @@ guaranteed to compile on anything but OSX as I do not test regularly enough on o
   This follows all the same licenses as AC does. My code isn't anything
 special, so feel free to use what I added in anyway you want.
 
+  Plugins that may not be immediately wanted are included in the extraplugins/ folder. If you want to use them, drag the plugin folder into the plugins/ folder, and they should be installed.
+
 --------
 Building
 --------
