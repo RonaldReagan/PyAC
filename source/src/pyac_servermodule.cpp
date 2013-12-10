@@ -42,8 +42,8 @@ static PyObject *py_getclient(PyObject *self, PyObject *args) {
     }
 
     int millis = servmillis - cl->connectmillis;
-    //                 //  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21     22 23 24 25 26
-    return Py_BuildValue("{si,ss,ss,si,si,si,si,si,si,si,si,si,si,si,si,si,si,si,si,si,s(fff),si,si,si,si,si}",
+    //                 //  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21     22 23 24 25 26 27
+    return Py_BuildValue("{si,ss,ss,si,si,si,si,si,si,si,si,si,si,si,si,si,si,si,si,si,s(fff),si,si,si,si,si,si}",
                          "cn",cl->clientnum,                     // 1
                          "hostname",cl->hostname,                // 2
                          "name",cl->name,                        // 3
@@ -69,7 +69,8 @@ static PyObject *py_getclient(PyObject *self, PyObject *args) {
                          "armour",cl->state.armour,              // 23
                          "primary",cl->state.primary,            // 24
                          "nextprimary",cl->state.nextprimary,    // 25
-                         "gunselect",cl->state.gunselect         // 26
+                         "gunselect",cl->state.gunselect,         // 26
+                         "team",cl->team                         // 27
                          );
 }
 static PyObject *py_getclients(PyObject *self) {
@@ -130,6 +131,21 @@ static PyObject *py_spawnclient(PyObject *self, PyObject *args) {
     sendf(tcn, 1, "ri7vv", SV_SPAWNSTATE, gs.lifesequence, gs.health, gs.armour, gs.primary,
         gs.gunselect, m_arena ? clients[tcn]->spawnindex : -1, NUMGUNS, gs.ammo, NUMGUNS, gs.mag);
     gs.lastspawn = gamemillis;
+    return Py_None;
+}
+
+static PyObject *py_forceteam(PyObject *self, PyObject *args) {
+    int tcn,team,reason=0;
+    if(!PyArg_ParseTuple(args,  "ii|i",&tcn,&team,&reason )) return NULL;
+    
+    if(!valid_client(tcn)) return Py_None;
+    if(!team_isvalid(team)) return Py_None;
+    if(reason<0 || reason > FTR_NUM) return Py_None;
+    
+    if(clients[tcn]->team != team) {
+        clients[tcn]->team = team;
+        sendf(-1, 1, "riii", SV_SETTEAM, tcn, team | (reason<<4));
+    }
     return Py_None;
 }
 
@@ -304,6 +320,7 @@ static PyMethodDef ModuleMethods[] = {
     {"getClients", (PyCFunction)py_getclients, METH_NOARGS, "Retrieves a tuple containing all of the clientnumbers on the server."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
+    {"forceTeam", py_forceteam, METH_VARARGS, "Forces a client to the specified team."},
     {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_NOARGS, "Retrieves a dictionary of all of the commandline options."},
     {"getAdminPasswords", (PyCFunction)py_getadminpasswords, METH_NOARGS, "Retrieves a tuple of all of the passwords."},
     {"getMaprot", (PyCFunction)py_getmaprot, METH_NOARGS, "Retrieves a tuple containing the maprot."},
