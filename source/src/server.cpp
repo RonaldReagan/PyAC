@@ -1980,6 +1980,7 @@ void startgame(const char *newname, int newmode, int newtime, bool notify)
             // change map
             sendf(-1, 1, "risiii", SV_MAPCHANGE, smapname, smode, mapbuffer.available(), mapbuffer.revision);
             if(smode>1 || (smode==0 && numnonlocalclients()>0)) sendf(-1, 1, "ri3", SV_TIMEUP, gamemillis, gamelimit);
+            triggerFunc("gameStart", false, "siii", smapname, smode, gamemillis, gamelimit);
         }
         packetbuf q(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
         send_item_list(q); // always send the item list when a game starts
@@ -3674,6 +3675,7 @@ void checkintermission()
     {
         minremain = (gamemillis>=gamelimit || forceintermission) ? 0 : (gamelimit - gamemillis + 60000 - 1)/60000;
         sendf(-1, 1, "ri3", SV_TIMEUP, (gamemillis>=gamelimit || forceintermission) ? gamelimit : gamemillis, gamelimit);
+        triggerFunc("intermissionStart", false, "");
     }
     if(!interm && minremain<=0) interm = gamemillis+10000;
     forceintermission = false;
