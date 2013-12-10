@@ -125,9 +125,22 @@ static PyObject *py_killclient(PyObject *self, PyObject *args) {
     if(!PyArg_ParseTuple(args,  "ii|i",&acn,&tcn,&gib,&weap )) return NULL;
     
     if(!valid_client(tcn)) return Py_None;
-    if(!valid_client(acn)) return Py_None ;
+    if(!valid_client(acn)) return Py_None;
     
     sendf(-1, 1, "ri5", gib ? SV_GIBDIED : SV_DIED, tcn, acn, clients[tcn]->state.frags, weap);
+    
+    return Py_None;
+}
+
+static PyObject *py_damageclient(PyObject *self, PyObject *args) {
+    int tcn,acn,damage,weap=0,gib=0 ;
+    if(!PyArg_ParseTuple(args,  "iii|ii",&acn,&tcn,&damage,&weap,&gib )) return NULL;
+    
+    if(!valid_client(tcn)) return Py_None;
+    if(!valid_client(acn)) return Py_None;
+    if(weap < 0 || weap >= NUMGUNS) return Py_None;
+    
+    serverdamage(clients[tcn], clients[acn], damage, weap, gib!=0, vec(0,0,0), true);
     
     return Py_None;
 }
@@ -354,6 +367,7 @@ static PyMethodDef ModuleMethods[] = {
     {"setClient", (PyCFunction)py_setClientState, METH_VARARGS | METH_KEYWORDS, "Sets the client's attributes"},
     {"getClients", (PyCFunction)py_getclients, METH_NOARGS, "Retrieves a tuple containing all of the clientnumbers on the server."},
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
+    {"damageClient", py_damageclient, METH_VARARGS, "Damages acn as if tcn hurt them."},
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
     {"forceTeam", py_forceteam, METH_VARARGS, "Forces a client to the specified team."},
     {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_NOARGS, "Retrieves a dictionary of all of the commandline options."},

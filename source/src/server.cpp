@@ -1458,10 +1458,13 @@ void checkitemspawns(int diff)
     }
 }
 
-void serverdamage(client *target, client *actor, int damage, int gun, bool gib, const vec &hitpush = vec(0, 0, 0))
+void serverdamage(client *target, client *actor, int damage, int gun, bool gib, const vec &hitpush = vec(0, 0, 0), bool ignorehook = false)
 {
     if (!m_demo && !m_coop && !validdamage(target, actor, damage, gun, gib)) return;
     if ( m_arena && gun == GUN_GRENADE && arenaroundstartmillis + 2000 > gamemillis && target != actor ) return;
+    if (!ignorehook) {
+        if (triggerFunc("clientDamage", true, "iiiii", actor->clientnum, target->clientnum, gun, damage, gib?1:0)) return;
+    }
     clientstate &ts = target->state;
     ts.dodamage(damage, gun);
     if(damage < INT_MAX)
