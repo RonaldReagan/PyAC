@@ -17,7 +17,7 @@ def mpt_to_tps(mpt):
 def serverext(cn,ext,ext_text):
     if ext == "tps":
         if auth.hasPermission(cn, "useTPS"):
-            acserver.msg("\fBCurrent TPS: \f9%d\fB, Average: \f9%.2f"%(mpt_to_tps(mpt_last),mpt_to_tps(float(mpt_total)/mpt_count)))
+            acserver.msg("\fBCurrent TPS: \f9%d\fB, Average: \f9%.2f"%(mpt_to_tps(mpt_last),mpt_to_tps(float(mpt_total)/mpt_count)),cn)
         else:
             acserver.msg("\f3You don't have access to that command!",cn)
 
