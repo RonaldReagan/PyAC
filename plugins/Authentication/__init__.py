@@ -16,7 +16,8 @@ AuthenticatedClients = {} #Key: CN, Value: User Class
 module_permissions = [
             ('listUsers',"Allows the user to view all other users."),
             ('addUser',"Allows the user create new users"),
-            ('grantPermission',"Allows the user grant permissions (caution, this is practically root access!)")
+            ('grantPermission',"Allows the user grant permissions (caution, this is practically root access!)"),
+            ('serverOp',"Allows the user to claim op and control the server")
             ]
 
 def main(plugin):
@@ -137,6 +138,12 @@ def serverext(session,cn,ext,ext_text):
             session.add(db.makeUser(name,pwd,email))
             session.commit()
             acserver.msg("\fJCreated user! Please login now with the credentials you provided.",cn)
+        else:
+            acserver.msg("\f3You don't have access to that command!",cn)
+    
+    if ext == "claimadmin":
+        if hasPermission(cn,'serverOp'):
+            acserver.setAdmin(cn,1)
         else:
             acserver.msg("\f3You don't have access to that command!",cn)
     

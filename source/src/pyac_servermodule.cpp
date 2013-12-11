@@ -145,6 +145,25 @@ static PyObject *py_damageclient(PyObject *self, PyObject *args) {
     return Py_None;
 }
 
+static PyObject *py_setadmin(PyObject *self, PyObject *args) {
+    int tcn,role ;
+    if(!PyArg_ParseTuple(args,  "ii",&tcn,&role)) return NULL;
+    
+    if(!valid_client(tcn)) return Py_None;
+    
+    if(!(role == CR_ADMIN || role == CR_DEFAULT)) return Py_None;
+    
+    if(role == CR_ADMIN) {
+        for(int i = 0; i < clients.length(); i++) {
+            clients[i]->role = CR_DEFAULT;
+        }
+        clients[tcn]->role = role;
+    }
+    
+    sendserveropinfo(-1);
+    return Py_None;
+}
+
 static PyObject *py_spawnclient(PyObject *self, PyObject *args) {
     int tcn,health,armour=-1,ammo=-1,mag=-1,weapon=-1,primaryweapon=-1;
     
@@ -369,6 +388,7 @@ static PyMethodDef ModuleMethods[] = {
     {"killClient", py_killclient, METH_VARARGS, "Kills a acn as if tcn killed them."},
     {"damageClient", py_damageclient, METH_VARARGS, "Damages acn as if tcn hurt them."},
     {"spawnClient", py_spawnclient, METH_VARARGS, "Spawns cn with specified stats"},
+    {"setAdmin", py_setadmin, METH_VARARGS, "Sets the admin-ship of the target player."},
     {"forceTeam", py_forceteam, METH_VARARGS, "Forces a client to the specified team."},
     {"getCmdLineOptions", (PyCFunction)py_getcommandline, METH_NOARGS, "Retrieves a dictionary of all of the commandline options."},
     {"getAdminPasswords", (PyCFunction)py_getadminpasswords, METH_NOARGS, "Retrieves a tuple of all of the passwords."},
