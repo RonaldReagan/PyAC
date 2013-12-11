@@ -25,6 +25,7 @@ static PyObject *py_sendmsg(PyObject *self, PyObject *args) {
         return NULL;
     
     sendservmsg(msg,cn);
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
@@ -38,6 +39,7 @@ static PyObject *py_getclient(PyObject *self, PyObject *args) {
         cl = clients[cn];
     }
     else {
+        Py_INCREF(Py_None);
         return Py_None;
     }
 
@@ -85,6 +87,7 @@ static PyObject *py_setClientState(PyObject *self, PyObject *args, PyObject *key
                                      &cn, &state, &primary, &gunselect, &flagscore, &frags, &deaths, &health, &armour, &points, &teamkills))
         return NULL;
     
+    Py_INCREF(Py_None);
     if (!valid_client(cn)) return Py_None;
     
     client *cl = clients[cn];
@@ -110,7 +113,7 @@ static PyObject *py_setClientState(PyObject *self, PyObject *args, PyObject *key
 static PyObject *py_getclients(PyObject *self) {
     PyObject *retTuple;
     
-    if (clients.length()==0) return Py_None;
+    if (clients.length()==0) {Py_INCREF(Py_None); return Py_None;}
     
     retTuple = PyTuple_New(clients.length());
     loopv(clients)
@@ -124,8 +127,8 @@ static PyObject *py_killclient(PyObject *self, PyObject *args) {
     int tcn,acn,gib,weap ;
     if(!PyArg_ParseTuple(args,  "ii|i",&acn,&tcn,&gib,&weap )) return NULL;
     
-    if(!valid_client(tcn)) return Py_None;
-    if(!valid_client(acn)) return Py_None;
+    Py_INCREF(Py_None);
+    if(!valid_client(tcn) || !valid_client(acn)) return Py_None;
     
     sendf(-1, 1, "ri5", gib ? SV_GIBDIED : SV_DIED, tcn, acn, clients[tcn]->state.frags, weap);
     
@@ -136,8 +139,9 @@ static PyObject *py_damageclient(PyObject *self, PyObject *args) {
     int tcn,acn,damage,weap=0,gib=0 ;
     if(!PyArg_ParseTuple(args,  "iii|ii",&acn,&tcn,&damage,&weap,&gib )) return NULL;
     
-    if(!valid_client(tcn)) return Py_None;
-    if(!valid_client(acn)) return Py_None;
+    Py_INCREF(Py_None);
+    
+    if(!valid_client(tcn) || !valid_client(acn)) return Py_None;
     if(weap < 0 || weap >= NUMGUNS) return Py_None;
     
     serverdamage(clients[tcn], clients[acn], damage, weap, gib!=0, vec(0,0,0), true);
@@ -149,6 +153,7 @@ static PyObject *py_setadmin(PyObject *self, PyObject *args) {
     int tcn,role ;
     if(!PyArg_ParseTuple(args,  "ii",&tcn,&role)) return NULL;
     
+    Py_INCREF(Py_None);
     if(!valid_client(tcn)) return Py_None;
     
     if(!(role == CR_ADMIN || role == CR_DEFAULT)) return Py_None;
@@ -168,6 +173,8 @@ static PyObject *py_spawnclient(PyObject *self, PyObject *args) {
     int tcn,health,armour=-1,ammo=-1,mag=-1,weapon=-1,primaryweapon=-1;
     
     if(!PyArg_ParseTuple(args,  "ii|iiiii",&tcn, &health, &armour, &ammo, &mag, &weapon, &primaryweapon)) return NULL;
+    
+    Py_INCREF(Py_None);
     
     if(!valid_client(tcn)) return Py_None;
     if(team_isspect(clients[tcn]->team)) return Py_None;
@@ -204,8 +211,8 @@ static PyObject *py_forceteam(PyObject *self, PyObject *args) {
     int tcn,team,reason=0;
     if(!PyArg_ParseTuple(args,  "ii|i",&tcn,&team,&reason )) return NULL;
     
-    if(!valid_client(tcn)) return Py_None;
-    if(!team_isvalid(team)) return Py_None;
+    Py_INCREF(Py_None);
+    if(!valid_client(tcn) || !team_isvalid(team)) return Py_None;
     if(reason<0 || reason > FTR_NUM) return Py_None;
     
     if(clients[tcn]->team != team) {
@@ -270,7 +277,7 @@ static PyObject *py_getcommandline(PyObject *self) {
 static PyObject *py_getadminpasswords(PyObject *self) {
     PyObject *retTuple;
     
-    if (!passwords.adminpwds.length()) return Py_None;
+    if (!passwords.adminpwds.length()) {Py_INCREF(Py_None); return Py_None;}
     
     retTuple = PyTuple_New(passwords.adminpwds.length());
     loopv(passwords.adminpwds)
@@ -284,7 +291,7 @@ static PyObject *py_getadminpasswords(PyObject *self) {
 static PyObject *py_getmaprot(PyObject *self) {
     PyObject *retTuple;
     
-    if (!maprot.configsets.length()) return Py_None;
+    if (!maprot.configsets.length()) {Py_INCREF(Py_None); return Py_None;}
     
     retTuple = PyTuple_New(maprot.configsets.length());
     loopv(maprot.configsets)
@@ -305,6 +312,7 @@ static PyObject *py_getmaprot(PyObject *self) {
 
 static PyObject *py_shrinkmaprot(PyObject *self) {
     maprot.configsets.shrink(0);
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
@@ -325,6 +333,7 @@ static PyObject *py_addmaptorot(PyObject *self, PyObject *args) {
     
     maprot.configsets.add(c);
     
+    Py_INCREF(Py_None);
     return Py_None;
 }
 
