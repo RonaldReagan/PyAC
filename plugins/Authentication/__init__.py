@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 import acserver
 from core.events import eventHandler
-from core.logging import *
+from core.consts import *
 
 from Authentication import database as db
 

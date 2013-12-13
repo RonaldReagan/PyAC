@@ -5,7 +5,7 @@ from zipfile import ZipFile
 import acserver
 from core.events import eventHandler
 from core.plugins import plugins
-from core.logging import *
+from core.consts import *
 from core.maps import *
 
 preferred_host = None

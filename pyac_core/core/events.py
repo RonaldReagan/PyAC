@@ -2,7 +2,7 @@ import sys
 import traceback
 
 import acserver
-from core.logging import *
+from core.consts import *
 
 class EventManager:
     def __init__(self):

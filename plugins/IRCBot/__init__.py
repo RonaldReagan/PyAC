@@ -3,7 +3,7 @@ import threading
 import acserver
 from core.events import eventHandler, triggerServerEvent
 from core.plugins import plugins
-from core.logging import *
+from core.consts import *
 
 from IRCBot.irclib import IRCBot, IRCConnection
 

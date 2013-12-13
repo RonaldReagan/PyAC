@@ -3,7 +3,7 @@ import os
 from ConfigParser import ConfigParser, NoOptionError
 
 import acserver
-from core.logging import *
+from core.consts import *
 
 cmdOpts = acserver.getCmdLineOptions()
 configLocation = cmdOpts['py_global_config']

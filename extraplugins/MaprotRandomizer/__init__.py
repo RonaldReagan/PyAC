@@ -3,7 +3,7 @@ import collections,random
 import acserver
 from core.events import eventHandler
 from core.maps import OfficialMaps,ServerMaps,IncomingMaps
-from core.modes import *
+from core.consts import *
 
 maptypes = ['official']
 mapnum = 50

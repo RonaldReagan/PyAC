@@ -1,5 +1,5 @@
 import acserver
-from core.logging import *
+from core.consts import *
 from core.events import policyHandler
     
 @policyHandler('masterRegister')

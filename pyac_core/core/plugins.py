@@ -13,7 +13,7 @@ from ConfigParser import ConfigParser, NoOptionError
 
 import acserver
 from core.config import Config
-from core.logging import *
+from core.consts import *
 
 plugins = {}
 paths = ['./plugins']
