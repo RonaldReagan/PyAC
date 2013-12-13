@@ -6,6 +6,7 @@ import acserver
 from core.events import eventHandler
 from core.plugins import plugins
 from core.logging import *
+from core.maps import *
 
 preferred_host = None
 download_queue = Queue.Queue()
@@ -13,7 +14,7 @@ message_queue = Queue.Queue()
 download_thread = None
 sources = ['packages.ac-akimbo.net', 'de.ac-akimbo.net', 'us.ac-akimbo.net']
 url_string = "http://%s/packages/maps/%s.cgz.zip"
-local_maps_path = os.path.join('.','packages','maps','servermaps')
+local_maps_path = ServerMapPath
 
 def findbesthost():
     ping_re = r'round-trip min/avg/max/stddev = (?P<min>[-+]?[0-9]*\.?[0-9]+)/(?P<avg>[-+]?[0-9]*\.?[0-9]+)/(?P<max>[-+]?[0-9]*\.?[0-9]+)/(?P<stddev>[-+]?[0-9]*\.?[0-9]+) ms'
