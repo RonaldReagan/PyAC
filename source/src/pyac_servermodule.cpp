@@ -377,7 +377,7 @@ static PyObject *py_getgamelimit(PyObject *self) {
 }
 
 static PyObject *py_getgamemillis(PyObject *self) {
-    return PyInt_FromLong(gamelimit);
+    return PyInt_FromLong(gamemillis);
 }
 
 static PyObject *py_getminremain(PyObject *self) {
