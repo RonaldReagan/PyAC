@@ -5,7 +5,9 @@ from core.consts import *
 
 enabled = False
 nextDamage = 0
-damageInterval = 300
+damageInterval = 3000
+healthmod = 0.03
+damagemod = 2
 
 def issueDamageUpdate():
     for cn in acserver.getClients():
@@ -14,7 +16,7 @@ def issueDamageUpdate():
             continue
             
         if cl['state'] == CS_ALIVE:
-            acserver.damageClient(cn,cn,max(2,cl['health']*0.03))
+            acserver.damageClient(cn,cn,max(2,int(cl['health']*healthmod)))
         
         acserver.setClient(cn,points=cl['health'])
     
@@ -35,7 +37,7 @@ def serverTick(gamemillis, servmillis):
     if enabled:
         if nextDamage <= servmillis:
             issueDamageUpdate()
-            nextDamage += damageInterval
+            nextDamage = servmillis+damageInterval
 
 @policyHandler('clientDamage')
 def clientdamage(acn, tcn, gun, damage, gib):
@@ -49,10 +51,11 @@ def clientdamage(acn, tcn, gun, damage, gib):
         tcl = acserver.getClient(tcn)
         if tcl['health'] > 200: #If the health is more than 200, we can have a zap
             acserver.killClient(acn,tcn,1,GUN_KNIFE)
+            addedhp = tcl['health']/damagemod
         else:
             acserver.killClient(acn,acn,1,GUN_KNIFE)
     else:
-        addedhp = damage/3
+        addedhp = damage/damagemod
     if acl['state'] == CS_ALIVE:
         acserver.setClient(acn,health=acl['health']+addedhp)
         acserver.damageClient(acn,acn,0)
