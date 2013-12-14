@@ -79,12 +79,12 @@ static PyObject *py_getclient(PyObject *self, PyObject *args) {
 static PyObject *py_setClientState(PyObject *self, PyObject *args, PyObject *keywds)
 {
     int cn;
-    int state=INT_MAX, primary=INT_MAX, gunselect=INT_MAX, flagscore=INT_MAX, frags=INT_MAX, deaths=INT_MAX, health=INT_MAX, armour=INT_MAX, points=INT_MAX, teamkills=INT_MAX;
+    int state=INT_MAX, primary=INT_MAX, gunselect=INT_MAX, flagscore=INT_MAX, frags=INT_MAX, deaths=INT_MAX, health=INT_MAX, armour=INT_MAX, points=INT_MAX, teamkills=INT_MAX, x=-1, y=-1, z=-1;
 
-    static char *kwlist[] = {"cn", "state", "primary", "gunselect", "flagscore", "frags", "deaths", "health", "armour", "points", "teamkills", NULL};
+    static char *kwlist[] = {"cn", "state", "primary", "gunselect", "flagscore", "frags", "deaths", "health", "armour", "points", "teamkills","x","y","z", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|iiiiiiiiii", kwlist,
-                                     &cn, &state, &primary, &gunselect, &flagscore, &frags, &deaths, &health, &armour, &points, &teamkills))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "i|iiiiiiiiiifff", kwlist,
+                                     &cn, &state, &primary, &gunselect, &flagscore, &frags, &deaths, &health, &armour, &points, &teamkills, &x, &y, &z))
         return NULL;
     
     Py_INCREF(Py_None);
@@ -104,6 +104,9 @@ static PyObject *py_setClientState(PyObject *self, PyObject *args, PyObject *key
     PY_SETSTATE(armour);
     PY_SETSTATE(points);
     PY_SETSTATE(teamkills);
+    if (x > 0) cl->state.o.x = x;
+    if (y > 0) cl->state.o.y = y;
+    if (z > 0) cl->state.o.z = z;
     #undef PY_SETSTATE
     
     sendresume(*cl,true);
@@ -124,8 +127,8 @@ static PyObject *py_getclients(PyObject *self) {
 }
 
 static PyObject *py_killclient(PyObject *self, PyObject *args) {
-    int tcn,acn,gib,weap ;
-    if(!PyArg_ParseTuple(args,  "ii|i",&acn,&tcn,&gib,&weap )) return NULL;
+    int tcn,acn,gib=0,weap=0 ;
+    if(!PyArg_ParseTuple(args,  "ii|ii",&acn,&tcn,&gib,&weap )) return NULL;
     
     Py_INCREF(Py_None);
     if(!valid_client(tcn) || !valid_client(acn)) return Py_None;
