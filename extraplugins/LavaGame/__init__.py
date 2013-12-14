@@ -11,16 +11,18 @@ waterlevel = -127
 def serverext(cn,ext,ext_text):
     global enabled
     if ext == "enableLava":
-        if auth.hasPermission(cn, "lavaOp"):
+        if auth.hasPermission(cn, "serverOp"):
             enabled = True
             acserver.msg("\f9Lava is enabled!")
+            acserver.log("LavaGame: %s enabled lava"%auth.AuthenticatedClients[cn].name)
         else:
             acserver.msg("\f3You don't have access to that command!",cn)
     
     if ext == "disableLava":
-        if auth.hasPermission(cn, "lavaOp"):
+        if auth.hasPermission(cn, "serverOp"):
             enabled = False
             acserver.msg("\f4Lava is disabled!",cn)
+            acserver.log("LavaGame: %s disabled lava"%auth.AuthenticatedClients[cn].name)
         else:
             acserver.msg("\f3You don't have access to that command!",cn)
 
@@ -32,7 +34,6 @@ def main(plugin):
 def initend():
     global auth
     auth = plugins['Authentication'].module
-    auth.addPermissionIfMissing("lavaOp","Allows the user to control the lava game plugin.")
 
 @eventHandler('gameStart')
 def gamestart(mapname,mode,gm,gl):
