@@ -28,6 +28,14 @@ def serverext(cn,ext,ext_text):
             enabled = True
             acserver.msg("\f9Vampire is enabled!")
             nextDamage = acserver.getServMillis() + damageInterval
+            acserver.log("Vampire: %s enabled vampire"%auth.AuthenticatedClients[cn].name)
+        else:
+            acserver.msg("\f3You don't have access to that command!",cn)
+    if ext == "disableVampire":
+        if auth.hasPermission(cn, "serverOp"):
+            enabled = False
+            acserver.msg("\f9Vampire is disabled!")
+            acserver.log("Vampire: %s disabled vampire"%auth.AuthenticatedClients[cn].name)
         else:
             acserver.msg("\f3You don't have access to that command!",cn)
 
@@ -42,6 +50,9 @@ def serverTick(gamemillis, servmillis):
 @policyHandler('clientDamage')
 def clientdamage(acn, tcn, gun, damage, gib):
     global enabled, clientHealth
+    if not enabled:
+        return False
+        
     if acn == tcn:
         return False
     
@@ -59,6 +70,7 @@ def clientdamage(acn, tcn, gun, damage, gib):
     if acl['state'] == CS_ALIVE:
         acserver.setClient(acn,health=acl['health']+addedhp)
         acserver.damageClient(acn,acn,0)
+        return False
     
 #Lets make the plugin loader happy.
 def main(plugin):
