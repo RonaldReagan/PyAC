@@ -391,6 +391,14 @@ static PyObject *py_getservmillis(PyObject *self) {
     return PyInt_FromLong(servmillis);
 }
 
+static PyObject *py_getmode(PyObject *self) {
+    return PyInt_FromLong(smode);
+}
+
+static PyObject *py_getmap(PyObject *self) {
+    return PyString_FromString(smapname);
+}
+
 static PyMethodDef ModuleMethods[] = {
 	{"log", py_logline, METH_VARARGS, "Logs a message."},
     {"msg", py_sendmsg, METH_VARARGS, "Sends a server message."},
@@ -413,6 +421,8 @@ static PyMethodDef ModuleMethods[] = {
     {"getGameMillis", (PyCFunction)py_getgamemillis, METH_NOARGS, "Gets the time spent in the game."},
     {"getMinRemain", (PyCFunction)py_getminremain, METH_NOARGS, "Gets the number of minutes remaining."},
     {"getServMillis", (PyCFunction)py_getservmillis, METH_NOARGS, "Gets the number of milliseconds that the server has been running."},
+    {"getMode", (PyCFunction)py_getmode, METH_NOARGS, "Gets the current game mode."},
+    {"getMap", (PyCFunction)py_getmap, METH_NOARGS, "Gets the current map."},
 	{NULL, NULL, 0, NULL},
 };
 

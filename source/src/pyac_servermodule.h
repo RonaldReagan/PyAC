@@ -5,7 +5,8 @@ extern void sendresume(client &c, bool broadcast);
 extern void serverdamage(client *target, client *actor, int damage, int gun, bool gib, const vec &hitpush = vec(0, 0, 0), bool ignorehook = false);
 extern void sendserveropinfo(int receiver);
 
-extern int servmillis, gamemillis, gamelimit, minremain;
+extern int servmillis, gamemillis, gamelimit, minremain, smode;
+extern string smapname;
 
 extern struct servercommandline scl;
 extern struct mapstats smapstats;
