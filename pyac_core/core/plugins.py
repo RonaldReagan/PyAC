@@ -9,6 +9,8 @@
     Licensed under GPLv2
 """
 import os
+import sys
+import traceback
 from ConfigParser import ConfigParser, NoOptionError
 
 import acserver
@@ -40,15 +42,27 @@ class Plugin:
             
     def loadModule(self):
         if self.isenabled:
-            self.module = __import__(os.path.basename(self.path))
+            try:
+                self.module = __import__(os.path.basename(self.path))
+            except:
+                exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
+                acserver.log('Uncaught exception occured when loading %s. Disabling plugin.'%self.name,ACLOG_ERROR)
+                for line in traceback.format_exc().split('\n'):
+                    acserver.log(line,ACLOG_ERROR)
+                return False
+                
             try:
                 #Reference it first to catch it not existing. Not some sort of internal error.
-                main = self.module.main #Call the main, passing the reference to the module.
+                main = self.module.main 
             except AttributeError:
                 acserver.log("No main function in %s"%self.path,ACLOG_WARNING)
-                return
+                return False
             
-            main(self)
+            main(self) #Call the main, passing the reference to the module.
+            
+            return True
+        else:
+            return False
                 
     def unloadModule(self):
         if self.isenabled:
@@ -80,13 +94,22 @@ def loadPlugins():
                 
                 if p.isenabled:
                     plugins[p.name] = p
-                    acserver.log(":   + Loaded plugin %s"%p.name)
                 else:
-                    acserver.log(":   - Skipped plugin %s"%p.path)
-                
-    for plugin in plugins.values():
-        plugin.loadModule()
-
+                    acserver.log(":   - Skipping plugin %s"%p.path)
+    
+    deadplugins = []
+    for pname in plugins:
+        plugin = plugins[pname]
+        acserver.log(":   + Loading plugin %s"%pname)
+        if not plugin.loadModule():
+            acserver.log(" Failed loading plugin %s"%pname,ACLOG_WARNING)
+            deadplugins.append(pname)
+    
+    for pname in deadplugins:
+        del plugins[pname]
+    
+    acserver.log("Loaded plugins: %s"%", ".join(plugins.keys()))
+            
 def reloadPlugins():
     acserver.log("Reloading Plugins:")
     for p in plugins.values():
