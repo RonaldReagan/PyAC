@@ -1,6 +1,8 @@
 import sys
 import traceback
 
+from twisted.internet import reactor
+
 import acserver
 from core.consts import *
 
@@ -41,7 +43,6 @@ class PolicyEventManager(EventManager):
 
 server_events = EventManager()
 policy_events = PolicyEventManager()
-exec_queue = []
 
 def registerServerEventHandler(event, func):
     '''Call function when event has been executed.'''
@@ -79,25 +80,13 @@ def triggerPolicyEvent(event, args):
     '''Trigger policy event with arguments.'''
     return policy_events.trigger(event, args)
 
-def execLater(func, args):
-    '''Call function at a later time with arguments in tuple args.'''
-    exec_queue.append((func, args))
-
-def triggerExecQueue():
-    for event in exec_queue:
-        try:
-            event[0](*event[1])
-        except:
-            exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
-            acserver.log('Uncaught exception execLater queue.',ACLOG_WARNING)
-            acserver.log(traceback.format_exc(),ACLOG_WARNING)
-            acserver.log(traceback.extract_tb(exceptionTraceback),ACLOG_WARNING)
-    del exec_queue[:]
+@eventHandler('serverTick')
+def update(gm,sm):
+    reactor.runUntilCurrent()
+    reactor.doIteration(0)
 
 @eventHandler('reload')
 def onReload():
     server_events.events.clear()
 
-def update():
-    triggerExecQueue()
-
+reactor.startRunning()
