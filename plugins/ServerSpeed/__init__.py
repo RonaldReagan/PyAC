@@ -1,8 +1,8 @@
 import acserver
 from core.events import eventHandler
-from core.plugins import plugins
+from core.plugins import plugin
 
-auth = None
+auth = plugin('Authentication')
 
 mpt_total = 0
 mpt_last = 0
@@ -38,12 +38,6 @@ def serverTick(gamemillis, servmillis):
         mpt_millis = servmillis
 
 #Lets make the plugin loader happy.
-def main(plugin):
-    pass
-
-@eventHandler('initEnd')
-def initend():
-    global auth, counter
-    auth = plugins['Authentication'].module
+def main(myplugin):
     auth.addPermissionIfMissing("useTPS","Allows a user to use the tps command")
     counter = True

@@ -1,7 +1,9 @@
 import acserver
 from core.events import eventHandler, policyHandler
-from core.plugins import plugins
+from core.plugins import plugin
 from core.consts import *
+
+auth = plugin('Authentication')
 
 enabled = False
 nextDamage = 0
@@ -73,10 +75,5 @@ def clientdamage(acn, tcn, gun, damage, gib):
         return False
     
 #Lets make the plugin loader happy.
-def main(plugin):
+def main(myplugin):
     pass
-
-@eventHandler('initEnd')
-def initend():
-    global auth
-    auth = plugins['Authentication'].module

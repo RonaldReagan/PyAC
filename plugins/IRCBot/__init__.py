@@ -2,12 +2,13 @@ import threading
 
 import acserver
 from core.events import eventHandler, triggerServerEvent
-from core.plugins import plugins
+from core.plugins import plugin
 from core.consts import *
+
+auth = plugin('Authentication')
 
 from IRCBot.irclib import IRCBot, IRCConnection
 
-auth = None
 acircbot = None
 bot_running = False
 
@@ -49,6 +50,9 @@ def main(plugin):
     settings['nick'] = conf.get('Settings', 'nick')
     settings['channels'] = conf.get('Settings', 'channels').split()
     
+    auth.addPermissionIfMissing("IRCOp","Allows the user to execute basic commands with the IRC Bot.")
+    auth.addPermissionIfMissing("IRCController","Allows the user to control the IRC Bot fully.")
+
     startIRCBot()
 
 def startIRCBot():
@@ -85,14 +89,7 @@ def servertick(gm,sm):
         if emsg:
             acserver.log(emsg,ACLOG_ERROR)
             bot_running = False
-
-@eventHandler('initEnd')
-def initend():
-    global auth
-    auth = plugins['Authentication'].module
-    auth.addPermissionIfMissing("IRCOp","Allows the user to execute basic commands with the IRC Bot.")
-    auth.addPermissionIfMissing("IRCController","Allows the user to control the IRC Bot fully.")
-
+            
 @eventHandler('IRC_chanMsg')
 def chanmsg(bot,nick,msg,channel):
     bot.msg("\f2[IRC]\f9%s\f5 %s: %s"%(nick,channel,msg))

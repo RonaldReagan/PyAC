@@ -9,8 +9,11 @@ cmdOpts = acserver.getCmdLineOptions()
 configLocation = cmdOpts['py_global_config']
 
 #Public interface, values defined here are defaults
-Config = {'ignoredplugins':''
-          }
+Config = {
+    'acserver': {
+        'ignoredplugins':'',
+        }
+    }
 
 conf = ConfigParser()
 if os.path.exists(configLocation):
@@ -19,17 +22,20 @@ if os.path.exists(configLocation):
     if not conf.has_section('acserver'):
         acserver.log("Invalid config file: Make sure you include a section 'acserver'",ACLOG_ERROR)
     else:
-        for i in conf.items('acserver'):
-            key,value = i
-            Config[key] = value
+        for sec in conf.sections():
+            for i in conf.items(sec):
+                key,value = i
+                Config[sec][key] = value
         
 else:
     acserver.log("Could not find global config file, writing default to %s"%configLocation,ACLOG_WARNING)
-    conf.add_section('acserver')
     
-    #Copy over the defaults
-    for key in Config:
-        conf.set('acserver', key, Config[key])
+    for sec in Config:
+        conf.add_section(sec)
+    
+        #Copy over the defaults
+        for key in Config[sec]:
+            conf.set(sec, key, Config[sec][key])
     
     with open(configLocation,'w') as f:
         conf.write(f)

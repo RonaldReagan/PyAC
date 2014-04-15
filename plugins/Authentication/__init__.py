@@ -196,5 +196,3 @@ def serverext(session,cn,ext,ext_text):
 def clientdisconect(cn,reason):
     if cn in AuthenticatedClients:
         del AuthenticatedClients[cn]
-
-# main()

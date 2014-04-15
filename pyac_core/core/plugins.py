@@ -20,6 +20,8 @@ from core.consts import *
 plugins = {}
 paths = ['./plugins']
 
+DEBUG = False
+
 class Plugin:
     def __init__(self, path, config_path, forcedisabled):
         self.path = path
@@ -27,16 +29,24 @@ class Plugin:
         
         conf = self.getConf()
         
+        
         self.isenabled = True
         try:
             self.isenabled = (conf.get('Plugin', 'enable') == 'yes')
             self.name = conf.get('Plugin', 'name')
             self.version = conf.get('Plugin', 'version')
             self.author = conf.get('Plugin', 'author')
+            deps = conf.get('Plugin', 'depends')
+            if deps != "":
+                self.depends = set(deps.split(','))
+            else:
+                self.depends = set()
         except NoOptionError:
+            acserver.log(":     Invalid config for %s"%self.path,ACLOG_WARNING)
             self.isenabled = False
         del conf
         
+        self.__dependname = os.path.basename(self.path)
         if forcedisabled:
             self.isenabled = False
             
@@ -78,7 +88,7 @@ class Plugin:
 def loadPlugins():
     plugins.clear()
     
-    ignoredplugins = Config['ignoredplugins'].split()
+    ignoredplugins = Config['acserver']['ignoredplugins'].split()
     for path in paths:
         files = os.listdir(path)
         for file in files:
@@ -97,16 +107,50 @@ def loadPlugins():
                 else:
                     acserver.log(":   - Skipping plugin %s"%p.path)
     
-    deadplugins = []
-    for pname in plugins:
-        plugin = plugins[pname]
-        acserver.log(":   + Loading plugin %s"%pname)
-        if not plugin.loadModule():
-            acserver.log(" Failed loading plugin %s"%pname,ACLOG_WARNING)
-            deadplugins.append(pname)
     
-    for pname in deadplugins:
-        del plugins[pname]
+    name_to_deps = dict( (p,set(plugins[p].depends)) for p in plugins )
+    
+    if DEBUG:
+        for name,deps in name_to_deps.iteritems():
+            for parent in deps:
+                print("%s -> %s;" %(name,parent))
+    
+    batches = []
+    
+    while name_to_deps:
+        ready = {name for name, deps in name_to_deps.iteritems() if not deps}
+        
+        if not ready:
+            acserver.log("Circular dependencies or missing plugin found!",ACLOG_ERROR)
+            acserver.log("No plugins loaded!",ACLOG_ERROR)
+            return
+            
+            
+        for name in ready:
+            del name_to_deps[name]
+        for deps in name_to_deps.itervalues():
+            deps.difference_update(ready)
+
+        batches.append( {plugins[name] for name in ready} )
+    
+    
+    deadplugins = []
+    for batch in batches:
+        for plugin in batch:
+            acserver.log(":   + Loading plugin %s"%plugin.name)
+            broken = False
+            for dep in plugin.depends:
+                if dep in deadplugins:
+                    deadplugins.append(plugin.name)
+                    acserver.log(" Failed loading plugin (dependancy errors): %s"%plugin.name,ACLOG_WARNING)
+                    broken = True
+                    
+            if not broken and not plugin.loadModule():
+                acserver.log(" Failed loading plugin (plugin errors): %s"%plugin.name,ACLOG_WARNING)
+                deadplugins.append(plugin.name)
+    
+    for plugin.name in deadplugins:
+        del plugins[plugin.name]
     
     acserver.log("Loaded plugins: %s"%", ".join(plugins.keys()))
             
@@ -116,3 +160,6 @@ def reloadPlugins():
         p.unloadModule()
     for p in plugins.values():
         p.loadModule()
+        
+def plugin(name):
+    return plugins[name].module
